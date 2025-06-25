@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write ./src",
-    "release": "release-it"
+    "release": "release-it",
+    "test": "echo \"No tests specified\" && exit 0"
   },
   "dependencies": {
     "@prisma/client": "^6.10.1",

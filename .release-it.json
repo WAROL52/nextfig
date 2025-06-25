@@ -12,7 +12,7 @@
     "pushArgs": ["--follow-tags"]
   },
   "hooks": {
-    "before:init": ["next lint"],
+    "before:init": ["next lint", "npm run test"],
     "after:bump": [
       "npx changelogen@latest --output ./CHANGELOG.MD",
       "echo 'export const RELEASE_VERSION = \"v${version}\";' > ./release-version.ts"
