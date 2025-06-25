@@ -1,4 +1,16 @@
 
+## v0.1.1...main
+
+[compare changes](https://github.com/WAROL52/nextfig/compare/v0.1.1...main)
+
+### 🏡 Chore
+
+- Update HISTORY.md to include detailed entries for v0.1.1 ([364cd31](https://github.com/WAROL52/nextfig/commit/364cd31))
+
+### ❤️ Contributors
+
+- WAROL52 <rabetsyrolio@gmail.com>
+
 ## v0.1.1
 
 
