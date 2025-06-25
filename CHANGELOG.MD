@@ -1,4 +1,27 @@
 
+## v0.1.1
+
+
+### 🚀 Enhancements
+
+- Update dependencies and add Prisma setup ([2350622](https://github.com/WAROL52/nextfig/commit/2350622))
+- Add ignorePatterns to ESLint configuration ([332bc0d](https://github.com/WAROL52/nextfig/commit/332bc0d))
+- Update ESLint ignore patterns and Prettier configuration ([fa8c264](https://github.com/WAROL52/nextfig/commit/fa8c264))
+- Add TODO section to README.md ([061996e](https://github.com/WAROL52/nextfig/commit/061996e))
+
+### 🏡 Chore
+
+- Update README.md to include project features list ([f7b3b1c](https://github.com/WAROL52/nextfig/commit/f7b3b1c))
+- Create CHANGELOG.md with initial content ([eb4d226](https://github.com/WAROL52/nextfig/commit/eb4d226))
+- Remove redundant header from CHANGELOG.md ([e9f0e88](https://github.com/WAROL52/nextfig/commit/e9f0e88))
+- Create HISTORY.md to document project changes ([b213fdb](https://github.com/WAROL52/nextfig/commit/b213fdb))
+- Reorganize CHANGELOG.md sections and contributors list ([f66a24b](https://github.com/WAROL52/nextfig/commit/f66a24b))
+- Update HISTORY.md to change header level and clarify documentation format ([4cbe7fa](https://github.com/WAROL52/nextfig/commit/4cbe7fa))
+
+### ❤️ Contributors
+
+- WAROL52 <rabetsyrolio@gmail.com>
+
 ## ...main
 
 
