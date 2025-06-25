@@ -1,4 +1,16 @@
 
+## v0.1.3...main
+
+[compare changes](https://github.com/WAROL52/nextfig/compare/v0.1.3...main)
+
+### 🏡 Chore
+
+- Add test script and update pre-release hooks to include tests ([24ee100](https://github.com/WAROL52/nextfig/commit/24ee100))
+
+### ❤️ Contributors
+
+- WAROL52 <rabetsyrolio@gmail.com>
+
 ## v0.1.2...main
 
 [compare changes](https://github.com/WAROL52/nextfig/compare/v0.1.2...main)
