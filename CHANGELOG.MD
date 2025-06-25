@@ -6,6 +6,21 @@
 ### 🏡 Chore
 
 - Update HISTORY.md to include detailed entries for v0.1.1 ([364cd31](https://github.com/WAROL52/nextfig/commit/364cd31))
+- Update CHANGELOG.md to include comparison link and contributors for v0.1.1 ([f191edd](https://github.com/WAROL52/nextfig/commit/f191edd))
+- Add release-it for automated versioning and releases ([3dba265](https://github.com/WAROL52/nextfig/commit/3dba265))
+- Update release-it configuration to require 'main' branch ([deccda8](https://github.com/WAROL52/nextfig/commit/deccda8))
+
+### ❤️ Contributors
+
+- WAROL52 <rabetsyrolio@gmail.com>
+
+## v0.1.1...main
+
+[compare changes](https://github.com/WAROL52/nextfig/compare/v0.1.1...main)
+
+### 🏡 Chore
+
+- Update HISTORY.md to include detailed entries for v0.1.1 ([364cd31](https://github.com/WAROL52/nextfig/commit/364cd31))
 
 ### ❤️ Contributors
 
