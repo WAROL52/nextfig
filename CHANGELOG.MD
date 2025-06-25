@@ -1,4 +1,16 @@
 
+## v0.1.2...main
+
+[compare changes](https://github.com/WAROL52/nextfig/compare/v0.1.2...main)
+
+### 🏡 Chore
+
+- Remove HISTORY.md and add release version constant ([1a8d1d8](https://github.com/WAROL52/nextfig/commit/1a8d1d8))
+
+### ❤️ Contributors
+
+- WAROL52 <rabetsyrolio@gmail.com>
+
 ## v0.1.1...main
 
 [compare changes](https://github.com/WAROL52/nextfig/compare/v0.1.1...main)
