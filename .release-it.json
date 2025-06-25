@@ -1,0 +1,25 @@
+{
+  "$schema": "https://unpkg.com/release-it/schema/release-it.json",
+  "github": {
+    "release": true
+  },
+  "git": {
+    "tagName": "v${version}",
+    "commitMessage": "chore(release): v${version}",
+    "requireCleanWorkingDir": true,
+    "requireBranch": "master",
+    "push": true,
+    "pushArgs": [
+      "--follow-tags"
+    ]
+  },
+  "hooks": {
+    "before:init": [
+      "next lint"
+    ],
+    "after:bump": [
+      "npx changelogen@latest --output ./CHANGELOG.MD",
+      "echo 'export const RELEASE_VERSION = \"v${version}\";' > ./release-version.ts"
+    ]
+  }
+}
