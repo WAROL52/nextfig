@@ -17,7 +17,6 @@ const eslintConfig = [
     rules: {
       semi: "warn",
       "prefer-arrow-callback": "warn",
-      "no-console": "warn",
       quotes: ["warn", "double"],
       "prefer-template": "warn",
       "check-file/filename-naming-convention": [
