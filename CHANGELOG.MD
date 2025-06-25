@@ -1,5 +1,3 @@
-# Changelog
-
 
 ## ...main
 
@@ -14,6 +12,7 @@
 ### 🏡 Chore
 
 - Update README.md to include project features list ([f7b3b1c](https://github.com/WAROL52/nextfig/commit/f7b3b1c))
+- Create CHANGELOG.md with initial content ([eb4d226](https://github.com/WAROL52/nextfig/commit/eb4d226))
 
 ### ❤️ Contributors
 
