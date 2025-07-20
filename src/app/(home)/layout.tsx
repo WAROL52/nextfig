@@ -11,7 +11,6 @@ export default async function Layout(props: Props) {
         <div>
             <HomeNavbar />
             <div>{props.children}</div>
-            <footer>Footer content here</footer>
         </div>
     );
 }
