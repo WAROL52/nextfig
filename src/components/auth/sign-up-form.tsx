@@ -21,7 +21,9 @@ import { Label } from "@/components/ui/label";
 
 import { signUp } from "@/lib/auth-client";
 
-export default function SignUp() {
+export type SignUpFormProps = {};
+
+export function SignUpForm({}: SignUpFormProps) {
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");

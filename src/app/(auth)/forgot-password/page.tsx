@@ -2,32 +2,30 @@ import Link from "next/link";
 
 import { Card, CardContent } from "@/components/ui/card";
 
-import { SignInForm } from "@/components/auth/sign-in-form";
+import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
 import { BgLogo } from "@/components/bg-logo";
 import { LinkToHome } from "@/components/link-to-home";
 
 import { cn } from "@/lib/utils";
 
-type Props = {
-    params: Promise<{ signIn: string }>;
-    searchParams: Promise<{
-        [key: string]: string | string[] | undefined;
-    }>;
-};
+type Props = {};
 
 export default async function Page(props: Props) {
     return (
         <div>
             <div className="bg-muted flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
                 <div className="w-full max-w-sm md:max-w-4xl">
-                    <LoginSection />
+                    <ForgotPasswordSection />
                 </div>
             </div>
         </div>
     );
 }
 
-function LoginSection({ className, ...props }: React.ComponentProps<"div">) {
+function ForgotPasswordSection({
+    className,
+    ...props
+}: React.ComponentProps<"div">) {
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
             <Card className="overflow-hidden p-0">
@@ -39,17 +37,17 @@ function LoginSection({ className, ...props }: React.ComponentProps<"div">) {
                                     <LinkToHome />
                                 </h1>
                                 <p className="text-muted-foreground text-balance">
-                                    Login to your Acme Inc account
+                                    Enter your email to reset your password
                                 </p>
                             </div>
-                            <SignInForm />
+                            <ForgotPasswordForm />
                             <div className="text-center text-sm">
-                                Don&apos;t have an account?{" "}
+                                Remembered your password?{" "}
                                 <Link
-                                    href="/sign-up"
+                                    href="/sign-in"
                                     className="underline underline-offset-4"
                                 >
-                                    Sign up
+                                    Sign in
                                 </Link>
                             </div>
                         </div>

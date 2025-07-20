@@ -1,17 +1,12 @@
 import Link from "next/link";
 
-import SignUp from "@/components/auth/sign-up";
+import { SignUpForm } from "@/components/auth/sign-up-form";
 import { BgLogo } from "@/components/bg-logo";
 import { LinkToHome } from "@/components/link-to-home";
 
 import { cn } from "@/lib/utils";
 
-type Props = {
-    params: Promise<{ signUp: string }>;
-    searchParams: Promise<{
-        [key: string]: string | string[] | undefined;
-    }>;
-};
+type Props = {};
 
 export default async function Page(props: Props) {
     return (
@@ -22,7 +17,7 @@ export default async function Page(props: Props) {
                 </div>
                 <div className="flex flex-1 items-center justify-center">
                     <div className="w-full max-w-lg">
-                        <SignupForm />
+                        <SignUpSection />
                     </div>
                 </div>
             </div>
@@ -33,7 +28,7 @@ export default async function Page(props: Props) {
     );
 }
 
-function SignupForm({ className, ...props }: React.ComponentProps<"div">) {
+function SignUpSection({ className, ...props }: React.ComponentProps<"div">) {
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
             <div className="flex flex-col items-center gap-2 text-center">
@@ -44,7 +39,7 @@ function SignupForm({ className, ...props }: React.ComponentProps<"div">) {
                 </p>
             </div>
             <div className="grid gap-6">
-                <SignUp />
+                <SignUpForm />
             </div>
             <div className="text-center text-sm">
                 have an account?{" "}

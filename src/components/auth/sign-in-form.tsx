@@ -20,7 +20,9 @@ import { Label } from "@/components/ui/label";
 import { signIn } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
-export default function SignIn() {
+export type SignInFormProps = {};
+
+export function SignInForm({}: SignInFormProps) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -54,7 +56,7 @@ export default function SignIn() {
                         <div className="flex items-center">
                             <Label htmlFor="password">Password</Label>
                             <Link
-                                href="#"
+                                href="/forgot-password"
                                 className="ml-auto inline-block text-sm underline"
                             >
                                 Forgot your password?
