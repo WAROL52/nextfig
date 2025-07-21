@@ -16,12 +16,23 @@ datasource db {
 
 model User {
   id            String    @id
+  uuid         String     @default(uuid()) @unique
   name          String
   email         String
   emailVerified Boolean
   image         String?
   createdAt     DateTime
   updatedAt     DateTime
+
+  firstName    String?
+  lastName     String?
+  website      String?
+  bio          String?
+  location     String?
+  phone        String?
+  birthDate   DateTime?
+  birthPlace   String?
+  profilePicture       String?
   sessions      Session[]
   accounts      Account[]
 

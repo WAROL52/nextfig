@@ -8,6 +8,55 @@ import { PrismaClient } from "@/generated/prisma";
 
 const prisma = new PrismaClient();
 export const auth = betterAuth({
+    user: {
+        additionalFields: {
+            firstName: {
+                type: "string",
+                optional: true,
+                input: true,
+            },
+            lastName: {
+                type: "string",
+                optional: true,
+                input: true,
+            },
+            website: {
+                type: "string",
+                optional: true,
+                required: false,
+            },
+            bio: {
+                type: "string",
+                optional: true,
+                required: false,
+            },
+            location: {
+                type: "string",
+                optional: true,
+                required: false,
+            },
+            phone: {
+                type: "string",
+                optional: true,
+                required: false,
+            },
+            birthDate: {
+                type: "date",
+                optional: true,
+                required: false,
+            },
+            birthPlace: {
+                type: "string",
+                optional: true,
+                required: false,
+            },
+            profilePicture: {
+                type: "string",
+                optional: true,
+                required: false,
+            },
+        },
+    },
     database: prismaAdapter(prisma, {
         provider: "postgresql", // or "mysql", "postgresql", ...etc
     }),
