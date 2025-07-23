@@ -13,11 +13,13 @@ export const auth = betterAuth({
             firstName: {
                 type: "string",
                 optional: true,
+                required: false,
                 input: true,
             },
             lastName: {
                 type: "string",
                 optional: true,
+                required: false,
                 input: true,
             },
             website: {

@@ -4,16 +4,25 @@ import { SignUpForm } from "@/components/auth/sign-up-form";
 import { BgLogo } from "@/components/bg-logo";
 import { LinkToHome } from "@/components/link-to-home";
 
+import prisma from "@/lib/prisma";
 import { cn } from "@/lib/utils";
 
 type Props = {};
 
 export default async function Page(props: Props) {
+    const users = await prisma.user.findFirst();
     return (
         <div className="grid min-h-svh lg:grid-cols-2">
             <div className="flex flex-col gap-4 p-6 md:p-10">
                 <div className="flex justify-center gap-2 md:justify-start">
-                    <LinkToHome />
+                    <LinkToHome />{" "}
+                    {users ? (
+                        <span className="text-muted-foreground text-sm">
+                            Welcome back, {users.firstName}!
+                        </span>
+                    ) : (
+                        "No user found."
+                    )}
                 </div>
                 <div className="flex flex-1 items-center justify-center">
                     <div className="w-full max-w-lg">

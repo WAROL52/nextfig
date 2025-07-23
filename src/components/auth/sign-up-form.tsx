@@ -8,7 +8,7 @@ import z from "zod";
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +20,6 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
 import { signUp } from "@/lib/auth-client";
 
@@ -33,36 +32,27 @@ import {
     FormMessage,
 } from "../ui/form";
 
-export const formSchema = z.object({
-    firstName: z.string(),
-    lastName: z.string(),
-    email: z.string(),
-    password: z.string(),
-    confirmPassword: z.string(),
-    image: z.string().optional(),
-});
+export const formSchema = z
+    .object({
+        firstName: z.string(),
+        lastName: z.string(),
+        email: z.string(),
+        password: z.string().min(7),
+        confirmPassword: z.string(),
+        image: z.instanceof(File).optional(),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        message: "Passwords do not match",
+        path: ["confirmPassword"],
+    });
 
 export type SignUpFormProps = {};
 
 export function SignUpForm({}: SignUpFormProps) {
-    const [passwordConfirmation, setPasswordConfirmation] = useState("");
-    const [image, setImage] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const router = useRouter();
     const [loading, setLoading] = useState(false);
 
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setImage(file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result as string);
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-    const [isLoading, startTransition] = useTransition();
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {},
@@ -73,15 +63,17 @@ export function SignUpForm({}: SignUpFormProps) {
         email,
         lastName,
         password,
+        image,
+        confirmPassword,
     }: z.infer<typeof formSchema>) {
         await signUp.email({
             email,
-            firstName,
-            lastName,
+            // firstName,
+            // lastName,
             password,
             name: `${firstName} ${lastName}`,
             image: image ? await convertImageToBase64(image) : "",
-            callbackURL: "/dashboard",
+            callbackURL: "/",
             fetchOptions: {
                 onResponse: () => {
                     setLoading(false);
@@ -93,13 +85,10 @@ export function SignUpForm({}: SignUpFormProps) {
                     toast.error(ctx.error.message);
                 },
                 onSuccess: async () => {
-                    router.push("/dashboard");
+                    router.push("/");
                 },
             },
         });
-        // Do something with the form values.
-        // ✅ This will be type-safe and validated.
-        console.log(values);
     }
 
     return (
@@ -250,58 +239,71 @@ export function SignUpForm({}: SignUpFormProps) {
                                         render={({ field }) => (
                                             <FormItem className="w-full">
                                                 <FormLabel>
-                                                    Profile Image
+                                                    Profile Image (optional)
                                                 </FormLabel>
                                                 <FormControl>
-                                                    <Input
-                                                        placeholder="Enter your text"
-                                                        type={"url"}
-                                                        value={field.value}
-                                                        onChange={(e) => {
-                                                            const val =
-                                                                e.target.value;
-                                                            field.onChange(val);
-                                                        }}
-                                                    />
+                                                    <div className="flex items-end gap-4">
+                                                        {imagePreview && (
+                                                            <div className="relative h-16 w-16 overflow-hidden rounded-sm">
+                                                                <Image
+                                                                    src={
+                                                                        imagePreview
+                                                                    }
+                                                                    alt="Profile preview"
+                                                                    layout="fill"
+                                                                    objectFit="cover"
+                                                                />
+                                                            </div>
+                                                        )}
+                                                        <div className="flex w-full items-center gap-2">
+                                                            <Input
+                                                                type="file"
+                                                                accept="image/*"
+                                                                onChange={(
+                                                                    e
+                                                                ) => {
+                                                                    const file =
+                                                                        e.target
+                                                                            .files?.[0];
+                                                                    if (file) {
+                                                                        const reader =
+                                                                            new FileReader();
+                                                                        reader.onloadend =
+                                                                            () => {
+                                                                                setImagePreview(
+                                                                                    reader.result as string
+                                                                                );
+                                                                            };
+                                                                        reader.readAsDataURL(
+                                                                            file
+                                                                        );
+                                                                    }
+                                                                    field.onChange(
+                                                                        file
+                                                                    );
+                                                                }}
+                                                            />
+                                                            {imagePreview && (
+                                                                <X
+                                                                    className="cursor-pointer"
+                                                                    onClick={() => {
+                                                                        field.onChange(
+                                                                            undefined
+                                                                        );
+                                                                        setImagePreview(
+                                                                            null
+                                                                        );
+                                                                    }}
+                                                                />
+                                                            )}
+                                                        </div>
+                                                    </div>
                                                 </FormControl>
 
                                                 <FormMessage />
                                             </FormItem>
                                         )}
                                     />
-                                    <Label htmlFor="image">
-                                        Profile Image (optional)
-                                    </Label>
-                                    <div className="flex items-end gap-4">
-                                        {imagePreview && (
-                                            <div className="relative h-16 w-16 overflow-hidden rounded-sm">
-                                                <Image
-                                                    src={imagePreview}
-                                                    alt="Profile preview"
-                                                    layout="fill"
-                                                    objectFit="cover"
-                                                />
-                                            </div>
-                                        )}
-                                        <div className="flex w-full items-center gap-2">
-                                            <Input
-                                                id="image"
-                                                type="file"
-                                                accept="image/*"
-                                                onChange={handleImageChange}
-                                                className="w-full"
-                                            />
-                                            {imagePreview && (
-                                                <X
-                                                    className="cursor-pointer"
-                                                    onClick={() => {
-                                                        setImage(null);
-                                                        setImagePreview(null);
-                                                    }}
-                                                />
-                                            )}
-                                        </div>
-                                    </div>
                                 </div>
                                 <Button
                                     type="submit"
