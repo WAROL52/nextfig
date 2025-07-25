@@ -1,14 +1,7 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, X } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 import z from "zod";
-
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,18 +12,12 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 
-import { signUp } from "@/lib/auth-client";
+import { useSignUpForm } from "@/hook-forms/use-sign-up-form";
 
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "../ui/form";
+import { FormFieldImage } from "../form-fields/form-field-image";
+import { FormFieldInput } from "../form-fields/form-field-input";
+import { Form } from "../ui/form";
 
 export const formSchema = z
     .object({
@@ -49,52 +36,12 @@ export const formSchema = z
 export type SignUpFormProps = {};
 
 export function SignUpForm({}: SignUpFormProps) {
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const router = useRouter();
-    const [loading, setLoading] = useState(false);
-
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-        defaultValues: {},
-    });
-
-    async function onSubmit({
-        firstName,
-        email,
-        lastName,
-        password,
-        image,
-        confirmPassword,
-    }: z.infer<typeof formSchema>) {
-        await signUp.email({
-            email,
-            // firstName,
-            // lastName,
-            password,
-            name: `${firstName} ${lastName}`,
-            image: image ? await convertImageToBase64(image) : "",
-            callbackURL: "/",
-            fetchOptions: {
-                onResponse: () => {
-                    setLoading(false);
-                },
-                onRequest: () => {
-                    setLoading(true);
-                },
-                onError: (ctx) => {
-                    toast.error(ctx.error.message);
-                },
-                onSuccess: async () => {
-                    router.push("/");
-                },
-            },
-        });
-    }
+    const { form, onSubmit, isSubmitting } = useSignUpForm();
 
     return (
         <div>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)}>
+                <form onSubmit={onSubmit}>
                     <Card className="z-50 max-w-lg rounded-md">
                         <CardHeader>
                             <CardTitle className="text-lg md:text-xl">
@@ -108,209 +55,69 @@ export function SignUpForm({}: SignUpFormProps) {
                             <div className="grid gap-4">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="grid gap-2">
-                                        <FormField
-                                            control={form.control}
+                                        <FormFieldInput
+                                            form={form}
+                                            type="text"
                                             name="firstName"
-                                            render={({ field }) => (
-                                                <FormItem className="w-full">
-                                                    <FormLabel>
-                                                        First name *
-                                                    </FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            placeholder="Max"
-                                                            type={"text"}
-                                                            value={field.value}
-                                                            onChange={(e) => {
-                                                                const val =
-                                                                    e.target
-                                                                        .value;
-                                                                field.onChange(
-                                                                    val
-                                                                );
-                                                            }}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
+                                            label="First name"
+                                            placeholder="Max"
+                                            required
                                         />
                                     </div>
                                     <div className="grid gap-2">
-                                        <FormField
-                                            control={form.control}
+                                        <FormFieldInput
+                                            form={form}
+                                            type="text"
                                             name="lastName"
-                                            render={({ field }) => (
-                                                <FormItem className="w-full">
-                                                    <FormLabel>
-                                                        Last name *
-                                                    </FormLabel>
-                                                    <FormControl>
-                                                        <Input
-                                                            placeholder="Robinson"
-                                                            type={"undefined"}
-                                                            value={field.value}
-                                                            onChange={(e) => {
-                                                                const val =
-                                                                    e.target
-                                                                        .value;
-                                                                field.onChange(
-                                                                    val
-                                                                );
-                                                            }}
-                                                        />
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
+                                            label="Last name"
+                                            placeholder="Robinson"
+                                            required
                                         />
                                     </div>
                                 </div>
                                 <div className="grid gap-2">
-                                    <FormField
-                                        control={form.control}
+                                    <FormFieldInput
+                                        form={form}
+                                        type="email"
                                         name="email"
-                                        render={({ field }) => (
-                                            <FormItem className="w-full">
-                                                <FormLabel>Email *</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        placeholder="m@example.com"
-                                                        type={"email"}
-                                                        value={field.value}
-                                                        onChange={(e) => {
-                                                            const val =
-                                                                e.target.value;
-                                                            field.onChange(val);
-                                                        }}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
+                                        label="Email"
+                                        placeholder="m@example.com"
+                                        required
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <FormField
-                                        control={form.control}
+                                    <FormFieldInput
+                                        form={form}
+                                        type="password"
                                         name="password"
-                                        render={({ field }) => (
-                                            <FormItem className="w-full">
-                                                <FormLabel>
-                                                    Password *
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        {...field}
-                                                        placeholder="Password"
-                                                        type="password"
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
+                                        label="Password"
+                                        placeholder="Password"
+                                        required
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <FormField
-                                        control={form.control}
+                                    <FormFieldInput
+                                        form={form}
+                                        type="password"
                                         name="confirmPassword"
-                                        render={({ field }) => (
-                                            <FormItem className="w-full">
-                                                <FormLabel>
-                                                    Confirm Password *
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        {...field}
-                                                        placeholder="Confirm Password"
-                                                        type="password"
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
+                                        label="Confirm Password"
+                                        placeholder="Confirm Password"
+                                        required
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <FormField
-                                        control={form.control}
+                                    <FormFieldImage
+                                        form={form}
                                         name="image"
-                                        render={({ field }) => (
-                                            <FormItem className="w-full">
-                                                <FormLabel>
-                                                    Profile Image (optional)
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <div className="flex items-end gap-4">
-                                                        {imagePreview && (
-                                                            <div className="relative h-16 w-16 overflow-hidden rounded-sm">
-                                                                <Image
-                                                                    src={
-                                                                        imagePreview
-                                                                    }
-                                                                    alt="Profile preview"
-                                                                    layout="fill"
-                                                                    objectFit="cover"
-                                                                />
-                                                            </div>
-                                                        )}
-                                                        <div className="flex w-full items-center gap-2">
-                                                            <Input
-                                                                type="file"
-                                                                accept="image/*"
-                                                                onChange={(
-                                                                    e
-                                                                ) => {
-                                                                    const file =
-                                                                        e.target
-                                                                            .files?.[0];
-                                                                    if (file) {
-                                                                        const reader =
-                                                                            new FileReader();
-                                                                        reader.onloadend =
-                                                                            () => {
-                                                                                setImagePreview(
-                                                                                    reader.result as string
-                                                                                );
-                                                                            };
-                                                                        reader.readAsDataURL(
-                                                                            file
-                                                                        );
-                                                                    }
-                                                                    field.onChange(
-                                                                        file
-                                                                    );
-                                                                }}
-                                                            />
-                                                            {imagePreview && (
-                                                                <X
-                                                                    className="cursor-pointer"
-                                                                    onClick={() => {
-                                                                        field.onChange(
-                                                                            undefined
-                                                                        );
-                                                                        setImagePreview(
-                                                                            null
-                                                                        );
-                                                                    }}
-                                                                />
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                </FormControl>
-
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
+                                        label="Profile Image (optional)"
                                     />
                                 </div>
                                 <Button
                                     type="submit"
                                     className="w-full"
-                                    disabled={loading}
+                                    disabled={isSubmitting}
                                 >
-                                    {loading ? (
+                                    {isSubmitting ? (
                                         <Loader2
                                             size={16}
                                             className="animate-spin"

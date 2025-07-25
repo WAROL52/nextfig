@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import { Button } from "@/components/ui/button";
 import {
     NavigationMenu,
@@ -13,6 +11,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 
+import { AuthMenu } from "../auth/auth-menu";
 import { Logo } from "../logo";
 
 // Navigation links array to be used in both desktop and mobile menus
@@ -121,17 +120,7 @@ export function HomeNavbar() {
                 </div>
                 {/* Right side */}
                 <div className="flex items-center gap-2">
-                    <Button
-                        asChild
-                        variant="ghost"
-                        size="sm"
-                        className="text-sm"
-                    >
-                        <Link href="/sign-in">Sign In</Link>
-                    </Button>
-                    <Button asChild size="sm" className="text-sm">
-                        <Link href="/sign-up">Sign up</Link>
-                    </Button>
+                    <AuthMenu />
                 </div>
             </div>
         </header>
