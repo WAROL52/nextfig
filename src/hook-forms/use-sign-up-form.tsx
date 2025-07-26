@@ -6,12 +6,12 @@ import { toast } from "sonner";
 import z from "zod";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useTransition } from "react";
 
 import { signUp } from "@/lib/auth-client";
 import { convertFileToBase64 } from "@/lib/utils";
 
-export const formSchema = z
+export const signUpFormSchema = z
     .object({
         firstName: z.string(),
         lastName: z.string(),
@@ -23,55 +23,57 @@ export const formSchema = z
     .refine((data) => data.password === data.confirmPassword, {
         message: "Passwords do not match",
         path: ["confirmPassword"],
-    });
+    })
+    .refine(
+        (data) => (data.image ? data.image.size <= 2 * 1024 * 1024 : true),
+        {
+            message: "Image size must be less than 2MB",
+            path: ["image"],
+        }
+    );
+
+export type SignUpFormData = z.infer<typeof signUpFormSchema>;
 
 export type useSignUpFormProps = {
     callbackURL?: string;
 };
 
-export function useSignUpForm({ callbackURL = "/" }: useSignUpFormProps = {}) {
+export function useSignUpForm({
+    callbackURL = "/profile",
+}: useSignUpFormProps = {}) {
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
+    const [isSubmitting, startSubmitting] = useTransition();
 
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const form = useForm<SignUpFormData>({
+        resolver: zodResolver(signUpFormSchema),
         defaultValues: {},
     });
 
-    async function onSubmit({
-        firstName,
-        email,
-        lastName,
-        password,
-        image,
-    }: z.infer<typeof formSchema>) {
-        await signUp.email({
-            email,
-            firstName,
-            lastName,
-            password,
-            name: `${firstName} ${lastName}`,
-            image: image ? await convertFileToBase64(image) : "",
-            callbackURL: callbackURL,
-            fetchOptions: {
-                onResponse: () => {
-                    setLoading(false);
-                },
-                onRequest: () => {
-                    setLoading(true);
-                },
-                onError: (ctx) => {
-                    toast.error(ctx.error.message);
-                },
-                onSuccess: async () => {
-                    router.push(callbackURL);
-                },
-            },
-        });
-    }
     return {
         form,
-        onSubmit: form.handleSubmit(onSubmit),
-        isSubmitting: loading,
+        isSubmitting,
+        onSubmit: form.handleSubmit((formData: SignUpFormData) =>
+            startSubmitting(async () => {
+                await signUp.email({
+                    email: formData.email,
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    password: formData.password,
+                    name: `${formData.firstName} ${formData.lastName}`,
+                    image: formData.image
+                        ? await convertFileToBase64(formData.image)
+                        : "",
+                    fetchOptions: {
+                        redirect: "manual",
+                        onError: (ctx) => {
+                            toast.error(ctx.error.message);
+                        },
+                        onSuccess: async () => {
+                            router.push(callbackURL);
+                        },
+                    },
+                });
+            })
+        ),
     };
 }

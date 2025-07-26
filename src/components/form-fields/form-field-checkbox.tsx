@@ -1,5 +1,6 @@
 "use client";
 
+import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import {
     Control,
     FieldPath,
@@ -9,16 +10,19 @@ import {
 
 import { ReactNode } from "react";
 
+import { Checkbox } from "../ui/checkbox";
 import { FormControl, FormField, FormItem, FormMessage } from "../ui/form";
-import { Input } from "../ui/input";
 import { FormFieldLabel } from "./form-field-label";
 
-export type FormFieldInputProps<
+export type FormFieldCheckboxProps<
     TFieldValues extends FieldValues = FieldValues,
     TContext = any,
     TTransformedValues = TFieldValues,
     TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> = Omit<React.ComponentProps<"input">, "name" | "form"> & {
+> = Omit<
+    React.ComponentProps<typeof CheckboxPrimitive.Root>,
+    "name" | "form"
+> & {
     form: UseFormReturn<TFieldValues, TContext, TTransformedValues>;
     name: TName;
     label: ReactNode;
@@ -26,7 +30,7 @@ export type FormFieldInputProps<
     extra?: ReactNode;
 };
 
-export function FormFieldInput<
+export function FormFieldCheckbox<
     TFieldValues extends FieldValues = FieldValues,
     TContext = any,
     TTransformedValues = TFieldValues,
@@ -37,7 +41,7 @@ export function FormFieldInput<
     label,
     required,
     ...props
-}: FormFieldInputProps<TFieldValues, TContext, TTransformedValues, TName>) {
+}: FormFieldCheckboxProps<TFieldValues, TContext, TTransformedValues, TName>) {
     return (
         <FormField<TFieldValues, TName>
             control={
@@ -49,26 +53,25 @@ export function FormFieldInput<
             }
             name={name}
             render={({ field }) => (
-                <FormItem className="w-full">
+                <FormItem className="flex w-full items-center gap-2">
+                    <FormControl>
+                        <Checkbox
+                            {...props}
+                            checked={field.value}
+                            onCheckedChange={(checked) => {
+                                field.onChange(checked);
+                                if (props.onCheckedChange) {
+                                    props.onCheckedChange(checked);
+                                }
+                                return checked;
+                            }}
+                        />
+                    </FormControl>
                     <FormFieldLabel
                         label={label}
                         required={required}
                         extra={props.extra}
                     />
-                    <FormControl>
-                        <Input
-                            {...props}
-                            required={required}
-                            value={field.value}
-                            onChange={(e) => {
-                                const val = e.target.value;
-                                field.onChange(val);
-                                if (props.onChange) {
-                                    props.onChange(e);
-                                }
-                            }}
-                        />
-                    </FormControl>
                     <FormMessage />
                 </FormItem>
             )}

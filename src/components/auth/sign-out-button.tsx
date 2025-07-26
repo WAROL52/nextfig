@@ -2,6 +2,7 @@
 
 import { LogOutIcon } from "lucide-react";
 
+import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
 import { authClient } from "@/lib/auth-client";
@@ -11,10 +12,12 @@ import { Button } from "../ui/button";
 export type SignOutButtonProps = {};
 
 export function SignOutButton({}: SignOutButtonProps) {
+    const router = useRouter();
     const [isSignOuting, startSignOut] = useTransition();
     const signOut = () =>
-        startSignOut(() => {
-            authClient.signOut();
+        startSignOut(async () => {
+            await authClient.signOut();
+            router.push("/sign-in");
         });
     return (
         <Button

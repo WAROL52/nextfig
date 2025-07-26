@@ -11,14 +11,9 @@ import {
 import Image from "next/image";
 import { ReactNode, useState } from "react";
 
-import {
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "../ui/form";
+import { FormControl, FormField, FormItem, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
+import { FormFieldLabel } from "./form-field-label";
 
 export type FormFieldImageProps<
     TFieldValues extends FieldValues = FieldValues,
@@ -30,6 +25,7 @@ export type FormFieldImageProps<
     name: TName;
     label: ReactNode;
     required?: boolean;
+    extra?: ReactNode;
 };
 
 export function FormFieldImage<
@@ -58,10 +54,11 @@ export function FormFieldImage<
             name={name}
             render={({ field }) => (
                 <FormItem className="w-full">
-                    <FormLabel>
-                        {label}
-                        {required && <span className="text-red-500">*</span>}
-                    </FormLabel>
+                    <FormFieldLabel
+                        label={label}
+                        required={required}
+                        extra={props.extra}
+                    />
                     <FormControl>
                         <div className="flex items-end gap-4">
                             {imagePreview && (
