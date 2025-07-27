@@ -17,9 +17,12 @@ const eslintConfig = [
         rules: {
             semi: "warn",
             "prefer-arrow-callback": "warn",
-            "@typescript-eslint/no-empty-object-types": "warn",
+            "@typescript-eslint/no-explicit-any": "off",
+            "@typescript-eslint/no-empty-object-type": "off",
+            "react/no-unescaped-entities": "off",
             quotes: ["warn", "double"],
             "prefer-template": "warn",
+            "@typescript-eslint/no-unused-vars": "warn",
             "check-file/filename-naming-convention": [
                 "error",
                 {

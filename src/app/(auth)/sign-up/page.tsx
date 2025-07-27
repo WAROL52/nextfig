@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 type Props = {};
 
-export default async function Page(props: Props) {
+export default async function Page({}: Props) {
     return (
         <div className="grid min-h-svh lg:grid-cols-2">
             <div className="flex flex-col gap-4 p-6 md:p-10">

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useId } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +28,6 @@ export type NavbarAccountProps = {};
 
 export function NavbarAccount({}: NavbarAccountProps) {
     const path = usePathname();
-    const id = useId();
     const navigationLinks = accountNavigations.map((link) => ({
         ...link,
         active: path.startsWith(link.href),

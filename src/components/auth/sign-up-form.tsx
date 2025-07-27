@@ -15,8 +15,8 @@ import {
 
 import { useSignUpForm } from "@/hooks/forms/use-sign-up-form";
 
-import { FormFieldImage } from "../form-fields/form-field-image";
-import { FormFieldInput } from "../form-fields/form-field-input";
+import { FieldImage } from "../fields/field-image";
+import { FieldInput } from "../fields/field-input";
 import { Form } from "../ui/form";
 
 export const formSchema = z
@@ -56,7 +56,7 @@ export function SignUpForm({}: SignUpFormProps) {
                             <div className="grid gap-4">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="grid gap-2">
-                                        <FormFieldInput
+                                        <FieldInput
                                             form={form}
                                             type="text"
                                             name="firstName"
@@ -66,7 +66,7 @@ export function SignUpForm({}: SignUpFormProps) {
                                         />
                                     </div>
                                     <div className="grid gap-2">
-                                        <FormFieldInput
+                                        <FieldInput
                                             form={form}
                                             type="text"
                                             name="lastName"
@@ -77,7 +77,7 @@ export function SignUpForm({}: SignUpFormProps) {
                                     </div>
                                 </div>
                                 <div className="grid gap-2">
-                                    <FormFieldInput
+                                    <FieldInput
                                         form={form}
                                         type="email"
                                         name="email"
@@ -87,7 +87,7 @@ export function SignUpForm({}: SignUpFormProps) {
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <FormFieldInput
+                                    <FieldInput
                                         form={form}
                                         type="password"
                                         name="password"
@@ -97,7 +97,7 @@ export function SignUpForm({}: SignUpFormProps) {
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <FormFieldInput
+                                    <FieldInput
                                         form={form}
                                         type="password"
                                         name="confirmPassword"
@@ -107,7 +107,7 @@ export function SignUpForm({}: SignUpFormProps) {
                                     />
                                 </div>
                                 <div className="grid gap-2">
-                                    <FormFieldImage
+                                    <FieldImage
                                         form={form}
                                         name="image"
                                         label="Profile Image (optional)"
@@ -153,13 +153,4 @@ export function SignUpForm({}: SignUpFormProps) {
             </Form>
         </div>
     );
-}
-
-async function convertImageToBase64(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
 }

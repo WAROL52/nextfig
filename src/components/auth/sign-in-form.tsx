@@ -16,8 +16,8 @@ import { cn } from "@/lib/utils";
 
 import { useSignInForm } from "@/hooks/forms/use-sign-in-form";
 
-import { FormFieldCheckbox } from "../form-fields/form-field-checkbox";
-import { FormFieldInput } from "../form-fields/form-field-input";
+import { FieldCheckbox } from "../fields/field-checkbox";
+import { FieldInput } from "../fields/field-input";
 import { LinkAuto } from "../link-auto";
 import { Form } from "../ui/form";
 
@@ -42,7 +42,7 @@ export function SignInForm({}: SignInFormProps) {
                         <CardContent>
                             <div className="grid gap-4">
                                 <div className="grid gap-2">
-                                    <FormFieldInput
+                                    <FieldInput
                                         form={form}
                                         type="email"
                                         name="email"
@@ -53,7 +53,7 @@ export function SignInForm({}: SignInFormProps) {
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <FormFieldInput
+                                    <FieldInput
                                         form={form}
                                         type="password"
                                         name="password"
@@ -73,7 +73,7 @@ export function SignInForm({}: SignInFormProps) {
                                 </div>
 
                                 <div className="flex items-center gap-2">
-                                    <FormFieldCheckbox
+                                    <FieldCheckbox
                                         form={form}
                                         name="rememberMe"
                                         label="Remember me"

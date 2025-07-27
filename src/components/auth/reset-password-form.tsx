@@ -25,9 +25,8 @@ export type ResetPasswordFormProps = {};
 export function ResetPasswordForm({}: ResetPasswordFormProps) {
     const token = useSearchParams().get("token");
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [password] = useState("");
     const [loading, setLoading] = useState(false);
-    const [rememberMe, setRememberMe] = useState(false);
 
     if (!token) {
         return (

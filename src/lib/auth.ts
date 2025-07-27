@@ -64,14 +64,14 @@ export const auth = betterAuth({
     }),
     emailAndPassword: {
         enabled: true,
-        async sendResetPassword({ user, url, token }, request) {
+        async sendResetPassword({ user, url, token }) {
             // Send an email to the user with a link to reset their password
             console.log(
                 `Sending password reset email to ${user.email} with token ${token}`
             );
             console.log(`Reset link: ${url}`);
         },
-        onPasswordReset: async ({ user }, request) => {
+        onPasswordReset: async ({ user }) => {
             // your logic here
             console.log(`Password for user ${user.email} has been reset.`);
         },

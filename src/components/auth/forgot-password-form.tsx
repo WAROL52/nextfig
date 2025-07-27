@@ -32,7 +32,7 @@ export function ForgotPasswordForm({}: ForgotPasswordFormProps) {
                     Forgot Password
                 </CardTitle>
                 <CardDescription className="text-xs md:text-sm">
-                    We'll send you instructions to reset your password
+                    We&apos;ll send you instructions to reset your password
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -62,11 +62,10 @@ export function ForgotPasswordForm({}: ForgotPasswordFormProps) {
                                 urlLinks.resetPassword.href;
                             console.log("redirect to:", redirectTo);
 
-                            const { data, error } =
-                                await authClient.requestPasswordReset({
-                                    email: email, // required
-                                    redirectTo: redirectTo, // optional
-                                });
+                            const {} = await authClient.requestPasswordReset({
+                                email: email, // required
+                                redirectTo: redirectTo, // optional
+                            });
                             setLoading(false);
                         }}
                     >
