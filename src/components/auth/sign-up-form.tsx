@@ -36,14 +36,15 @@ export const formSchema = z
 export type SignUpFormProps = {};
 
 export function SignUpForm({}: SignUpFormProps) {
-    const { form, onSubmit, isSubmitting } = useSignUpForm();
+    const { form, onSubmitForm, isSubmitting, alertError } = useSignUpForm();
 
     return (
         <div>
             <Form {...form}>
-                <form onSubmit={onSubmit}>
+                <form onSubmit={onSubmitForm}>
                     <Card className="z-50 max-w-lg rounded-md">
                         <CardHeader>
+                            {alertError}rabetsyrolio@gmail.com
                             <CardTitle className="text-lg md:text-xl">
                                 Sign Up
                             </CardTitle>

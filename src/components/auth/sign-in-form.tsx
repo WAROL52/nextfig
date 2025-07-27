@@ -2,8 +2,6 @@
 
 import { Loader2 } from "lucide-react";
 
-import Link from "next/link";
-
 import { Button } from "@/components/ui/button";
 import {
     Card,
@@ -20,19 +18,20 @@ import { useSignInForm } from "@/hooks/forms/use-sign-in-form";
 
 import { FormFieldCheckbox } from "../form-fields/form-field-checkbox";
 import { FormFieldInput } from "../form-fields/form-field-input";
+import { LinkAuto } from "../link-auto";
 import { Form } from "../ui/form";
 
 export type SignInFormProps = {};
 
 export function SignInForm({}: SignInFormProps) {
-    const { form, isSubmitting, onSubmit } = useSignInForm();
-
+    const { form, isSubmitting, onSubmitForm, alertError } = useSignInForm();
     return (
         <div>
             <Form {...form}>
-                <form onSubmit={onSubmit}>
+                <form onSubmit={onSubmitForm}>
                     <Card className="max-w-md">
                         <CardHeader>
+                            {alertError}
                             <CardTitle className="text-lg md:text-xl">
                                 Sign In
                             </CardTitle>
@@ -60,12 +59,12 @@ export function SignInForm({}: SignInFormProps) {
                                         name="password"
                                         label="Password"
                                         extra={
-                                            <Link
-                                                href="/forgot-password"
+                                            <LinkAuto
+                                                to="forgotPassword"
                                                 className="ml-auto inline-block text-sm underline"
                                             >
                                                 Forgot your password?
-                                            </Link>
+                                            </LinkAuto>
                                         }
                                         required
                                         placeholder="password"
