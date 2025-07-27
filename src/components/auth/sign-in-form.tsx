@@ -16,7 +16,7 @@ import {
 import { signIn } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
-import { useSignInForm } from "@/hook-forms/use-sign-in-form";
+import { useSignInForm } from "@/hooks/forms/use-sign-in-form";
 
 import { FormFieldCheckbox } from "../form-fields/form-field-checkbox";
 import { FormFieldInput } from "../form-fields/form-field-input";

@@ -6,6 +6,8 @@ import {
     LogOutIcon,
     LucideProps,
     PlusIcon,
+    RectangleEllipsisIcon,
+    RotateCcwKeyIcon,
     Settings,
     UserCircle,
 } from "lucide-react";
@@ -89,6 +91,16 @@ export const urlLinks = createUrlLink({
         href: "/sign-out",
         label: "Sign Out",
         icon: LogOutIcon,
+    },
+    forgotPassword: {
+        href: "/forgot-password",
+        label: "Forgot Password",
+        icon: RectangleEllipsisIcon,
+    },
+    resetPassword: {
+        href: "/reset-password",
+        label: "Reset Password",
+        icon: RotateCcwKeyIcon,
     },
 });
 export type UrlLinkName = keyof typeof urlLinks;

@@ -25,14 +25,6 @@ import { accountNavigations } from "@/url-links";
 
 import { LinkAuto } from "./link-auto";
 
-// Navigation links array to be used in both desktop and mobile menus
-// const accountNavigations = [
-//     { href: "/account", label: "Account" },
-//     { href: "/org", label: "Organizations" },
-//     { href: "/notifications", label: "Notifications" },
-//     { href: "/settings", label: "Settings" },
-// ];
-
 export type NavbarAccountProps = {};
 
 export function NavbarAccount({}: NavbarAccountProps) {

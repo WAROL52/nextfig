@@ -13,7 +13,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-import { useSignUpForm } from "@/hook-forms/use-sign-up-form";
+import { useSignUpForm } from "@/hooks/forms/use-sign-up-form";
 
 import { FormFieldImage } from "../form-fields/form-field-image";
 import { FormFieldInput } from "../form-fields/form-field-input";
