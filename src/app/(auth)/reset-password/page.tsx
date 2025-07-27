@@ -1,4 +1,7 @@
+import { Loader2 } from "lucide-react";
+
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -41,7 +44,11 @@ function ResetPasswordSection({
                                     Enter your new password below to reset it
                                 </p>
                             </div>
-                            <ResetPasswordForm />
+                            <Suspense
+                                fallback={<Loader2 className="animate-spin" />}
+                            >
+                                <ResetPasswordForm />
+                            </Suspense>
                             <div className="text-center text-sm">
                                 Remembered your password?{" "}
                                 <Link
