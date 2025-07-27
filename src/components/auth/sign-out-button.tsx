@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOutIcon } from "lucide-react";
+import { Loader2, LogOutIcon } from "lucide-react";
 
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
@@ -23,10 +23,18 @@ export function SignOutButton({}: SignOutButtonProps) {
         <Button
             disabled={isSignOuting}
             onClick={signOut}
-            variant={"secondary"}
+            variant={"outline"}
             className="flex w-full justify-start"
         >
-            <LogOutIcon size={16} className="opacity-60" aria-hidden="true" />
+            {isSignOuting ? (
+                <Loader2 size={16} className="opacity-60" aria-hidden="true" />
+            ) : (
+                <LogOutIcon
+                    size={16}
+                    className="opacity-60"
+                    aria-hidden="true"
+                />
+            )}
             <span>Logout</span>
         </Button>
     );

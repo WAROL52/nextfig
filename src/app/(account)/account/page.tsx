@@ -1,5 +1,5 @@
 type Props = {
-    params: Promise<{ pofile: string }>;
+    params: Promise<{ profile: string }>;
     searchParams: Promise<{
         [key: string]: string | string[] | undefined;
     }>;

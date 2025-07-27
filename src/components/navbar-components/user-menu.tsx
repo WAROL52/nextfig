@@ -1,14 +1,4 @@
 import {
-    BoltIcon,
-    BookOpenIcon,
-    Layers2Icon,
-    PinIcon,
-    UserPenIcon,
-} from "lucide-react";
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuGroup,
@@ -18,79 +8,53 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { authClient } from "@/lib/auth-client";
+
 import { SignOutButton } from "../auth/sign-out-button";
+import { UserAvatar } from "../auth/user-avatar";
+import { LinkAuto } from "../link-auto";
+import { Button } from "../ui/button";
 
 export default function UserMenu() {
+    const { data: session } = authClient.useSession();
+    const user = session?.user;
+    if (!user) {
+        return null; // or handle unauthenticated state
+    }
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button
-                    variant="ghost"
-                    className="h-auto p-0 hover:bg-transparent"
-                >
-                    <Avatar>
-                        <AvatarImage src="./avatar.jpg" alt="Profile image" />
-                        <AvatarFallback>KK</AvatarFallback>
-                    </Avatar>
+                <Button variant={"ghost"} className="px-2">
+                    <UserAvatar withName withEmail />
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="max-w-64" align="end">
-                <DropdownMenuLabel className="flex min-w-0 flex-col">
-                    <span className="text-foreground truncate text-sm font-medium">
-                        Keith Kennedy
-                    </span>
-                    <span className="text-muted-foreground truncate text-xs font-normal">
-                        k.kennedy@originui.com
-                    </span>
+            <DropdownMenuContent
+                className="min-w-56 rounded-lg"
+                align="end"
+                sideOffset={4}
+            >
+                <DropdownMenuLabel className="p-0 font-normal">
+                    <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                        <UserAvatar withName withEmail />
+                    </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                        <BoltIcon
-                            size={16}
-                            className="opacity-60"
-                            aria-hidden="true"
-                        />
-                        <span>Option 1</span>
+                    <DropdownMenuItem asChild>
+                        <LinkAuto withIcon to="account" />
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <Layers2Icon
-                            size={16}
-                            className="opacity-60"
-                            aria-hidden="true"
-                        />
-                        <span>Option 2</span>
+                    <DropdownMenuItem asChild>
+                        <LinkAuto withIcon to="org" />
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <BookOpenIcon
-                            size={16}
-                            className="opacity-60"
-                            aria-hidden="true"
-                        />
-                        <span>Option 3</span>
+                    <DropdownMenuItem asChild>
+                        <LinkAuto withIcon to="notifications" />
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                        <LinkAuto withIcon to="settings" />
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                        <PinIcon
-                            size={16}
-                            className="opacity-60"
-                            aria-hidden="true"
-                        />
-                        <span>Option 4</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <UserPenIcon
-                            size={16}
-                            className="opacity-60"
-                            aria-hidden="true"
-                        />
-                        <span>Option 5</span>
-                    </DropdownMenuItem>
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem asChild>
                     <SignOutButton />
                 </DropdownMenuItem>
             </DropdownMenuContent>
