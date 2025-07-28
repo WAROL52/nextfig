@@ -6,6 +6,8 @@ import { headers } from "next/headers";
 // If your Prisma file is located elsewhere, you can change the path
 import { PrismaClient } from "@/generated/prisma";
 
+import { sendResetPassword } from "./nodemailer";
+
 const prisma = new PrismaClient();
 export const auth = betterAuth({
     user: {
@@ -64,12 +66,12 @@ export const auth = betterAuth({
     }),
     emailAndPassword: {
         enabled: true,
-        async sendResetPassword({ user, url, token }) {
-            // Send an email to the user with a link to reset their password
-            console.log(
-                `Sending password reset email to ${user.email} with token ${token}`
-            );
-            console.log(`Reset link: ${url}`);
+        async sendResetPassword({ user, url }) {
+            await sendResetPassword({
+                url,
+                email: user.email,
+                name: user.name,
+            });
         },
         onPasswordReset: async ({ user }) => {
             // your logic here
