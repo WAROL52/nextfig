@@ -6,11 +6,22 @@ import {
     UseMutationOptions,
     useMutation,
 } from "@tanstack/react-query";
-import { AlertCircleIcon } from "lucide-react";
+import { AlertCircleIcon, Loader2 } from "lucide-react";
 import { DefaultValues, FieldValues, useForm } from "react-hook-form";
 import z from "zod";
 
+import { ComponentProps, ReactNode } from "react";
+
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
+
+import {
+    FieldCheckbox,
+    FieldCheckboxProps,
+} from "@/components/fields/field-checkbox";
+import { FieldImage, FieldImageProps } from "@/components/fields/field-image";
+import { FieldInput, FieldInputProps } from "@/components/fields/field-input";
 
 type AsyncDefaultValues<TFieldValues> = (
     payload?: unknown
@@ -59,13 +70,14 @@ export function useMutationForm<
         resolver: zodResolver(schema),
         defaultValues: defaultValues,
     });
+    const handleSubmit = form.handleSubmit(async (data) => {
+        return result.mutateAsync(data);
+    });
     return {
         ...result,
         isSubmitting: isPending,
         form,
-        onSubmitForm: form.handleSubmit(async (data) => {
-            return result.mutateAsync(data);
-        }),
+        onSubmitForm: handleSubmit,
         alertError: result.error ? (
             <Alert variant="destructive" className="mb-4">
                 <AlertCircleIcon />
@@ -79,6 +91,69 @@ export function useMutationForm<
                 </AlertDescription>
             </Alert>
         ) : null,
+        FormComponent: function FormComponent(props: ComponentProps<"form">) {
+            const { children, onSubmit, ...rest } = props;
+            return (
+                <Form {...form}>
+                    <form
+                        {...rest}
+                        onSubmit={(e) => {
+                            if (onSubmit) {
+                                onSubmit(e);
+                            } else {
+                                handleSubmit(e);
+                            }
+                        }}
+                        {...rest}
+                    >
+                        {children}
+                    </form>
+                </Form>
+            );
+        },
+        Field: {
+            Input: function FieldInputComponent(
+                props: Omit<FieldInputProps<z.infer<Z>>, "form">
+            ) {
+                return <FieldInput {...props} form={form} />;
+            },
+            Checkbox: function FieldCheckboxComponent(
+                props: Omit<FieldCheckboxProps<z.infer<Z>>, "form">
+            ) {
+                return <FieldCheckbox {...props} form={form} />;
+            },
+            Image: function FieldImageComponent(
+                props: Omit<FieldImageProps<z.infer<Z>>, "form">
+            ) {
+                return <FieldImage {...props} form={form} />;
+            },
+            Submit: function FieldSubmitComponent({
+                loadingText,
+                ...props
+            }: Omit<
+                React.ComponentProps<typeof Button>,
+                "type" | "disabled"
+            > & {
+                disabled?: boolean;
+                loadingText?: ReactNode;
+            }) {
+                let children = props.children || name;
+                if (form.formState.isSubmitting && loadingText)
+                    children = loadingText;
+                return (
+                    <Button
+                        type="submit"
+                        disabled={props.disabled || form.formState.isSubmitting}
+                        {...props}
+                    >
+                        {form.formState.isSubmitting && (
+                            <Loader2 size={16} className="animate-spin" />
+                        )}
+                        {children}
+                    </Button>
+                );
+            },
+        },
     };
 }
 function getMessageError(error: NonNullable<DefaultError>) {

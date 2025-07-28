@@ -1,6 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
+import { FieldPath, FieldValues } from "react-hook-form";
 
 import Image from "next/image";
 import { ComponentProps, useState } from "react";
@@ -78,4 +79,11 @@ export const FieldImage = createFormFieldComponent<
     };
 });
 
-export type FieldImageProps = ComponentProps<typeof FieldImage>;
+export type FieldImageProps<
+    TFieldValues extends FieldValues = FieldValues,
+    TContext = any,
+    TTransformedValues = TFieldValues,
+    TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = ComponentProps<
+    typeof FieldImage<TFieldValues, TContext, TTransformedValues, TName>
+>;

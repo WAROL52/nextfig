@@ -14,11 +14,11 @@ import { useMutationForm } from "./use-mutation-form";
 
 export const signUpFormSchema = z
     .object({
-        firstName: z.string(),
-        lastName: z.string(),
-        email: z.string(),
+        firstName: z.string().min(2),
+        lastName: z.string().min(2),
+        email: z.string().email(),
         password: z.string().min(7),
-        confirmPassword: z.string(),
+        confirmPassword: z.string().min(7),
         image: z.instanceof(File).optional(),
     })
     .refine((data) => data.password === data.confirmPassword, {
@@ -44,7 +44,7 @@ export function useSignUpForm({
 }: useSignUpFormProps = {}) {
     const router = useRouter();
     return useMutationForm(signUpFormSchema, {
-        name: "sign-up",
+        name: "Create an account",
         onSubmit: async (data) => {
             const response = await signUp.email({
                 email: data.email,

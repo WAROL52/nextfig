@@ -1,5 +1,7 @@
 "use client";
 
+import { FieldPath, FieldValues } from "react-hook-form";
+
 import { ComponentProps } from "react";
 
 import { createFormFieldComponent } from "@/lib/create-field-component";
@@ -30,4 +32,11 @@ export const FieldInput = createFormFieldComponent<
     ),
 }));
 
-export type FieldInputProps = ComponentProps<typeof FieldInput>;
+export type FieldInputProps<
+    TFieldValues extends FieldValues = FieldValues,
+    TContext = any,
+    TTransformedValues = TFieldValues,
+    TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = ComponentProps<
+    typeof FieldInput<TFieldValues, TContext, TTransformedValues, TName>
+>;

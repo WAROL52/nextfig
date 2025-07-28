@@ -1,5 +1,7 @@
 "use client";
 
+import { FieldPath, FieldValues } from "react-hook-form";
+
 import { ComponentProps } from "react";
 
 import { createFormFieldComponent } from "@/lib/create-field-component";
@@ -31,4 +33,11 @@ export const FieldCheckbox = createFormFieldComponent<
     ),
 }));
 
-export type FieldCheckboxProps = ComponentProps<typeof FieldCheckbox>;
+export type FieldCheckboxProps<
+    TFieldValues extends FieldValues = FieldValues,
+    TContext = any,
+    TTransformedValues = TFieldValues,
+    TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+> = ComponentProps<
+    typeof FieldCheckbox<TFieldValues, TContext, TTransformedValues, TName>
+>;
