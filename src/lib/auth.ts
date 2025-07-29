@@ -10,6 +10,9 @@ import { sendResetPassword } from "./nodemailer";
 
 const prisma = new PrismaClient();
 export const auth = betterAuth({
+    trustedOrigins: process.env.VERCEL_URL
+        ? [`https://${process.env.VERCEL_URL}`]
+        : undefined,
     baseURL: process.env.VERCEL_URL
         ? `https://${process.env.VERCEL_URL}`
         : process.env.BETTER_AUTH_URL,
