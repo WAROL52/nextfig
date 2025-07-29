@@ -10,13 +10,28 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
+import { authClient } from "@/lib/auth-client";
+
 import { useSignUpForm } from "@/hooks/forms/use-sign-up-form";
 
 export type SignUpFormProps = {};
 
 export function SignUpForm({}: SignUpFormProps) {
     const { FormComponent, Field, onSubmitForm, alertError } = useSignUpForm();
+    const { data: sessionData } = authClient.useSession();
 
+    if (sessionData?.user) {
+        return (
+            <Card className="max-w-md">
+                <CardContent>
+                    <p className="text-center text-sm">
+                        You are already logged in as{" "}
+                        <strong>{sessionData.user.email}</strong>.
+                    </p>
+                </CardContent>
+            </Card>
+        );
+    }
     return (
         <div>
             <FormComponent onSubmit={onSubmitForm}>

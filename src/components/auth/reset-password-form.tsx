@@ -12,6 +12,8 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
+import { authClient } from "@/lib/auth-client";
+
 import { useResetPasswordForm } from "@/hooks/forms/use-reset-password-form";
 
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
@@ -23,6 +25,7 @@ export function ResetPasswordForm({}: ResetPasswordFormProps) {
     const { Field, FormComponent, alertError } = useResetPasswordForm({
         token: token || undefined,
     });
+    const { data: sessionData } = authClient.useSession();
 
     if (!token) {
         return (
@@ -45,6 +48,18 @@ export function ResetPasswordForm({}: ResetPasswordFormProps) {
                     </AlertDescription>
                 </Alert>
             </div>
+        );
+    }
+    if (sessionData?.user) {
+        return (
+            <Card className="max-w-md">
+                <CardContent>
+                    <p className="text-center text-sm">
+                        You are already logged in as{" "}
+                        <strong>{sessionData.user.email}</strong>.
+                    </p>
+                </CardContent>
+            </Card>
         );
     }
 

@@ -9,7 +9,7 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
-import { signIn } from "@/lib/auth-client";
+import { authClient, signIn } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
 import { useSignInForm } from "@/hooks/forms/use-sign-in-form";
@@ -21,6 +21,20 @@ export type SignInFormProps = {};
 export function SignInForm({}: SignInFormProps) {
     const { isSubmitting, onSubmitForm, alertError, FormComponent, Field } =
         useSignInForm();
+    const { data: sessionData } = authClient.useSession();
+
+    if (sessionData?.user) {
+        return (
+            <Card className="max-w-md">
+                <CardContent>
+                    <p className="text-center text-sm">
+                        You are already logged in as{" "}
+                        <strong>{sessionData.user.email}</strong>.
+                    </p>
+                </CardContent>
+            </Card>
+        );
+    }
     return (
         <div>
             <FormComponent onSubmit={onSubmitForm}>

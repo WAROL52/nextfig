@@ -8,12 +8,28 @@ import {
     CardTitle,
 } from "@/components/ui/card";
 
+import { authClient } from "@/lib/auth-client";
+
 import { useForgotPasswordForm } from "@/hooks/forms/use-forgot-password-form";
 
 export type ForgotPasswordFormProps = {};
 
 export function ForgotPasswordForm({}: ForgotPasswordFormProps) {
     const { Field, FormComponent, alertError, data } = useForgotPasswordForm();
+    const { data: sessionData } = authClient.useSession();
+
+    if (sessionData?.user) {
+        return (
+            <Card className="max-w-md">
+                <CardContent>
+                    <p className="text-center text-sm">
+                        You are already logged in as{" "}
+                        <strong>{sessionData.user.email}</strong>.
+                    </p>
+                </CardContent>
+            </Card>
+        );
+    }
     if (data?.data.status)
         return (
             <Card className="max-w-md">
