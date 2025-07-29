@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import {
     NavigationMenu,
@@ -91,12 +93,12 @@ export function HomeNavbar() {
                     </div>
                     {/* Main nav */}
                     <div className="flex items-center gap-6">
-                        <a
-                            href="#"
+                        <Link
+                            href="/"
                             className="text-primary hover:text-primary/90"
                         >
                             <Logo />
-                        </a>
+                        </Link>
                         {/* Navigation menu */}
                         <NavigationMenu className="h-full *:h-full max-md:hidden">
                             <NavigationMenuList className="h-full gap-2">

@@ -17,11 +17,10 @@ import {
 } from "@/components/ui/popover";
 
 import Logo from "@/components/navbar-components/logo";
-import NotificationMenu from "@/components/navbar-components/notification-menu";
-import UserMenu from "@/components/navbar-components/user-menu";
 
 import { accountNavigations } from "@/url-links";
 
+import { AuthMenu } from "./auth/auth-menu";
 import { LinkAuto } from "./link-auto";
 
 export type NavbarAccountProps = {};
@@ -113,10 +112,7 @@ export function NavbarAccount({}: NavbarAccountProps) {
                 <div className="grow"></div>
                 {/* Right side */}
                 <div className="flex flex-1 items-center justify-end gap-2">
-                    {/* Notification */}
-                    <NotificationMenu />
-                    {/* User menu */}
-                    <UserMenu />
+                    <AuthMenu />
                 </div>
             </div>
             {/* Bottom navigation */}
