@@ -10,8 +10,6 @@ import {
     Text,
 } from "@react-email/components";
 
-import { baseURL } from "@/lib/auth";
-
 interface ResetPasswordEmailProps {
     userFirstname?: string;
     resetPasswordLink?: string;
@@ -28,7 +26,12 @@ export const ResetPasswordEmail = ({
                 <Preview>Reset your password</Preview>
                 <Container style={container}>
                     <Img
-                        src={`${baseURL}/logo.png`}
+                        src={`${
+                            process.env.VERCEL_PROJECT_PRODUCTION_URL
+                                ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+                                : process.env.BETTER_AUTH_URL ||
+                                  "http://localhost:3000"
+                        }/logo.png`}
                         width="40"
                         height="33"
                         alt="Dropbox"
@@ -62,7 +65,11 @@ export const ResetPasswordEmail = ({
 
 ResetPasswordEmail.PreviewProps = {
     userFirstname: "Alan",
-    resetPasswordLink: `${baseURL}/reset-password`,
+    resetPasswordLink: `${
+        process.env.VERCEL_PROJECT_PRODUCTION_URL
+            ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+            : process.env.BETTER_AUTH_URL || "http://localhost:3000"
+    }/reset-password`,
 } as ResetPasswordEmailProps;
 
 export default ResetPasswordEmail;
