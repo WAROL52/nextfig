@@ -10,6 +10,8 @@ import {
 
 import { authClient } from "@/lib/auth-client";
 
+import { useIsMobile } from "@/hooks/use-mobile";
+
 import { SignOutButton } from "../auth/sign-out-button";
 import { UserAvatar } from "../auth/user-avatar";
 import { LinkAuto } from "../link-auto";
@@ -17,6 +19,7 @@ import { Button } from "../ui/button";
 
 export default function UserMenu() {
     const { data: session } = authClient.useSession();
+    const isMobile = useIsMobile();
     const user = session?.user;
     if (!user) {
         return null; // or handle unauthenticated state
@@ -25,7 +28,7 @@ export default function UserMenu() {
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant={"ghost"} className="px-2">
-                    <UserAvatar withName withEmail />
+                    <UserAvatar withName={!isMobile} withEmail={!isMobile} />
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
