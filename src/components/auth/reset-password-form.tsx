@@ -1,11 +1,9 @@
 "use client";
 
-import { AlertCircleIcon, Loader2 } from "lucide-react";
+import { AlertCircleIcon } from "lucide-react";
 
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
@@ -13,10 +11,8 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
-import { signIn } from "@/lib/auth-client";
+import { useResetPasswordForm } from "@/hooks/forms/use-reset-password-form";
 
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 
@@ -24,9 +20,9 @@ export type ResetPasswordFormProps = {};
 
 export function ResetPasswordForm({}: ResetPasswordFormProps) {
     const token = useSearchParams().get("token");
-    const [email, setEmail] = useState("");
-    const [password] = useState("");
-    const [loading, setLoading] = useState(false);
+    const { Field, FormComponent, alertError } = useResetPasswordForm({
+        token: token || undefined,
+    });
 
     if (!token) {
         return (
@@ -53,60 +49,43 @@ export function ResetPasswordForm({}: ResetPasswordFormProps) {
     }
 
     return (
-        <Card className="max-w-md">
-            <CardHeader>
-                <CardTitle className="text-lg md:text-xl">
-                    Forgot Password {token}
-                </CardTitle>
-                <CardDescription className="text-xs md:text-sm">
-                    We'll send you instructions to reset your password
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <div className="grid gap-4">
-                    <div className="grid gap-2">
-                        <Label htmlFor="email">Email</Label>
-                        <Input
-                            id="email"
-                            type="email"
-                            placeholder="m@example.com"
-                            required
-                            onChange={(e) => {
-                                setEmail(e.target.value);
-                            }}
-                            value={email}
-                        />
+        <FormComponent>
+            <Card className="max-w-md">
+                <CardHeader>
+                    {alertError}
+                    <CardTitle className="text-lg md:text-xl">
+                        Reset Password
+                    </CardTitle>
+                    <CardDescription className="text-xs md:text-sm">
+                        Enter your new password below. Make sure it is at least
+                        8 characters long and contains a mix of letters,
+                        numbers, and symbols.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid gap-4">
+                        <div className="grid gap-2">
+                            <Field.Input
+                                name="password"
+                                type="password"
+                                label="New Password"
+                                placeholder="********"
+                                required
+                            />
+                        </div>
+                        <div className="grid gap-2">
+                            <Field.Input
+                                name="confirmPassword"
+                                type="password"
+                                label="Confirm New Password"
+                                placeholder="********"
+                                required
+                            />
+                        </div>
+                        <Field.Submit className="w-full" />
                     </div>
-
-                    <Button
-                        type="submit"
-                        className="w-full"
-                        disabled={loading}
-                        onClick={async () => {
-                            await signIn.email(
-                                {
-                                    email,
-                                    password,
-                                },
-                                {
-                                    onRequest: () => {
-                                        setLoading(true);
-                                    },
-                                    onResponse: () => {
-                                        setLoading(false);
-                                    },
-                                }
-                            );
-                        }}
-                    >
-                        {loading ? (
-                            <Loader2 size={16} className="animate-spin" />
-                        ) : (
-                            <p> Reset Password </p>
-                        )}
-                    </Button>
-                </div>
-            </CardContent>
-        </Card>
+                </CardContent>
+            </Card>
+        </FormComponent>
     );
 }

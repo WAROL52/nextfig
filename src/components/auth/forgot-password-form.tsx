@@ -14,8 +14,6 @@ export type ForgotPasswordFormProps = {};
 
 export function ForgotPasswordForm({}: ForgotPasswordFormProps) {
     const { Field, FormComponent, alertError, data } = useForgotPasswordForm();
-
-    console.log("ForgotPasswordForm data:", data);
     if (data?.data.status)
         return (
             <Card className="max-w-md">
