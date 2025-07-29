@@ -10,14 +10,12 @@ import {
     Text,
 } from "@react-email/components";
 
+import { baseURL } from "@/lib/auth";
+
 interface ResetPasswordEmailProps {
     userFirstname?: string;
     resetPasswordLink?: string;
 }
-
-const baseUrl = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : process.env.BETTER_AUTH_URL;
 
 export const ResetPasswordEmail = ({
     userFirstname,
@@ -30,7 +28,7 @@ export const ResetPasswordEmail = ({
                 <Preview>Reset your password</Preview>
                 <Container style={container}>
                     <Img
-                        src={`${baseUrl}/logo.png`}
+                        src={`${baseURL}/logo.png`}
                         width="40"
                         height="33"
                         alt="Dropbox"
@@ -64,7 +62,7 @@ export const ResetPasswordEmail = ({
 
 ResetPasswordEmail.PreviewProps = {
     userFirstname: "Alan",
-    resetPasswordLink: "https://nextfig.vercel.app/reset-password",
+    resetPasswordLink: `${baseURL}/reset-password`,
 } as ResetPasswordEmailProps;
 
 export default ResetPasswordEmail;

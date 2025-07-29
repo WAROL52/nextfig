@@ -9,13 +9,13 @@ import { PrismaClient } from "@/generated/prisma";
 import { sendResetPassword } from "./nodemailer";
 
 const prisma = new PrismaClient();
+export const baseURL = process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : process.env.BETTER_AUTH_URL || "http://localhost:3000";
+
 export const auth = betterAuth({
-    trustedOrigins: process.env.VERCEL_URL
-        ? [`https://${process.env.VERCEL_URL}`, "https://nextfig.vercel.app"]
-        : undefined,
-    baseURL: process.env.VERCEL_URL
-        ? `https://${process.env.VERCEL_URL}`
-        : process.env.BETTER_AUTH_URL,
+    trustedOrigins: [baseURL],
+    baseURL: baseURL,
     user: {
         additionalFields: {
             firstName: {
