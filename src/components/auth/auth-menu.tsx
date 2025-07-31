@@ -13,6 +13,29 @@ export type AuthMenuProps = {};
 
 export function AuthMenu({}: AuthMenuProps) {
     const session = useSession();
+    if (session.isPending)
+        return (
+            <div className="flex gap-2">
+                <ThemeToggle />
+                <Button
+                    disabled={session.isPending}
+                    asChild
+                    variant="ghost"
+                    size="sm"
+                    className="text-sm"
+                >
+                    <Link href="#">Sign In</Link>
+                </Button>
+                <Button
+                    disabled={session.isPending}
+                    asChild
+                    size="sm"
+                    className="text-sm"
+                >
+                    <Link href="#">Sign up</Link>
+                </Button>
+            </div>
+        );
     if (!session.data)
         return (
             <div className="flex gap-2">
