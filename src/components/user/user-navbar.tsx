@@ -23,9 +23,9 @@ import { accountNavigations } from "@/url-links";
 import { AuthMenu } from "../auth/auth-menu";
 import { LinkAuto } from "../link-auto";
 
-export type NavbarAccountProps = {};
+export type UserNavbarProps = {};
 
-export function NavbarAccount({}: NavbarAccountProps) {
+export function UserNavbar({}: UserNavbarProps) {
     const path = usePathname();
     const navigationLinks = accountNavigations.map((link) => ({
         ...link,

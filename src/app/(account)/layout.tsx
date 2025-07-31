@@ -1,6 +1,6 @@
 import React from "react";
 
-import { NavbarAccount } from "@/components/user/navbar-account";
+import { UserNavbar } from "@/components/user/user-navbar";
 
 type Props = {
     children?: React.ReactNode;
@@ -9,7 +9,7 @@ type Props = {
 export default async function Layout(props: Props) {
     return (
         <div>
-            <NavbarAccount />
+            <UserNavbar />
             <div>{props.children}</div>
         </div>
     );
