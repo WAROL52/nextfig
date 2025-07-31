@@ -35,11 +35,6 @@ import { LinkAuto } from "../link-auto";
 import { Logo } from "../logo";
 
 const data = {
-    user: {
-        name: "shadcn",
-        email: "m@example.com",
-        avatar: "/avatars/shadcn.jpg",
-    },
     navMain: [
         {
             title: "Playground",
@@ -166,6 +161,10 @@ export function SuperSidebar({
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
+                        <LinkAuto
+                            to="super.users:email"
+                            params={{ email: "gd" }}
+                        />
                         <SidebarMenuButton size="lg" asChild>
                             <LinkAuto to="home">
                                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-10 items-center justify-center rounded-lg">
@@ -190,7 +189,7 @@ export function SuperSidebar({
                 <NavSecondary items={data.navSecondary} className="mt-auto" />
             </SidebarContent>
             <SidebarFooter>
-                <NavUser user={data.user} />
+                <NavUser />
             </SidebarFooter>
         </Sidebar>
     );

@@ -19,15 +19,7 @@ import {
 import { UserAvatar } from "../user/user-avatar";
 import UserMenu from "../user/user-menu";
 
-export function NavUser({
-    user,
-}: {
-    user: {
-        name: string;
-        email: string;
-        avatar: string;
-    };
-}) {
+export function NavUser() {
     const { isMobile } = useSidebar();
 
     return (

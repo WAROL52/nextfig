@@ -12,6 +12,7 @@ import {
     ShieldUserIcon,
     UserCircle,
     UserLockIcon,
+    UsersIcon,
 } from "lucide-react";
 
 import { ForwardRefExoticComponent, RefAttributes } from "react";
@@ -113,6 +114,21 @@ export const urlLinks = createUrlLink({
         href: "/admin",
         label: "Admin",
         icon: UserLockIcon,
+    },
+    ["super.users"]: {
+        href: "/super/users",
+        label: "Users",
+        icon: UsersIcon,
+    },
+    ["super.users:id"]: {
+        href: "/super/users",
+        label: "Account",
+        icon: UserCircle,
+    },
+    ["super.users:email"]: {
+        href: "/super/users",
+        label: "Account",
+        icon: UserCircle,
     },
 });
 export type UrlLinkName = keyof typeof urlLinks;
