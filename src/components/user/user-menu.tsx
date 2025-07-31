@@ -1,3 +1,5 @@
+import { ComponentProps } from "react";
+
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -36,31 +38,79 @@ export default function UserMenu() {
                 align="end"
                 sideOffset={4}
             >
-                <DropdownMenuLabel className="p-0 font-normal">
-                    <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                        <UserAvatar withName withEmail />
-                    </div>
-                </DropdownMenuLabel>
+                <Header />
                 <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                    <DropdownMenuItem asChild>
-                        <LinkAuto withIcon to="account" />
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                        <LinkAuto withIcon to="org" />
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                        <LinkAuto withIcon to="notifications" />
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                        <LinkAuto withIcon to="settings" />
-                    </DropdownMenuItem>
-                </DropdownMenuGroup>
+                <GroupSuper />
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                    <SignOutButton />
-                </DropdownMenuItem>
+                <GroupAccount />
+                <DropdownMenuSeparator />
+                <GroupAdmin />
+                <DropdownMenuSeparator />
+                <Footer />
             </DropdownMenuContent>
         </DropdownMenu>
     );
 }
+
+function GroupAccount(props: ComponentProps<"div">) {
+    return (
+        <DropdownMenuGroup {...props}>
+            <DropdownMenuItem asChild>
+                <LinkAuto withIcon to="account" />
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+                <LinkAuto withIcon to="org" />
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+                <LinkAuto withIcon to="notifications" />
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+                <LinkAuto withIcon to="settings" />
+            </DropdownMenuItem>
+        </DropdownMenuGroup>
+    );
+}
+
+function GroupSuper(props: ComponentProps<"div">) {
+    return (
+        <DropdownMenuGroup {...props}>
+            <DropdownMenuItem asChild>
+                <LinkAuto withIcon to="super" />
+            </DropdownMenuItem>
+        </DropdownMenuGroup>
+    );
+}
+
+function GroupAdmin(props: ComponentProps<"div">) {
+    return (
+        <DropdownMenuGroup {...props}>
+            <DropdownMenuItem asChild>
+                <LinkAuto withIcon to="admin" />
+            </DropdownMenuItem>
+        </DropdownMenuGroup>
+    );
+}
+
+function Footer() {
+    return (
+        <DropdownMenuItem asChild>
+            <SignOutButton />
+        </DropdownMenuItem>
+    );
+}
+
+function Header() {
+    return (
+        <DropdownMenuLabel className="p-0 font-normal">
+            <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
+                <UserAvatar withName withEmail />
+            </div>
+        </DropdownMenuLabel>
+    );
+}
+
+UserMenu.GroupAccount = GroupAccount;
+UserMenu.Footer = Footer;
+UserMenu.Header = Header;
+UserMenu.GroupSuper = GroupSuper;
+UserMenu.GroupAdmin = GroupAdmin;

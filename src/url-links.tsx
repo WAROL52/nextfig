@@ -9,7 +9,9 @@ import {
     RectangleEllipsisIcon,
     RotateCcwKeyIcon,
     Settings,
+    ShieldUserIcon,
     UserCircle,
+    UserLockIcon,
 } from "lucide-react";
 
 import { ForwardRefExoticComponent, RefAttributes } from "react";
@@ -101,6 +103,16 @@ export const urlLinks = createUrlLink({
         href: "/reset-password",
         label: "Reset Password",
         icon: RotateCcwKeyIcon,
+    },
+    super: {
+        href: "/super",
+        label: "Super",
+        icon: ShieldUserIcon,
+    },
+    admin: {
+        href: "/admin",
+        label: "Admin",
+        icon: UserLockIcon,
     },
 });
 export type UrlLinkName = keyof typeof urlLinks;
