@@ -20,8 +20,8 @@ import Logo from "@/components/navbar-components/logo";
 
 import { accountNavigations } from "@/url-links";
 
-import { AuthMenu } from "./auth/auth-menu";
-import { LinkAuto } from "./link-auto";
+import { AuthMenu } from "../auth/auth-menu";
+import { LinkAuto } from "../link-auto";
 
 export type NavbarAccountProps = {};
 

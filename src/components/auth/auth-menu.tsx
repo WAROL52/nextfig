@@ -6,8 +6,8 @@ import { useSession } from "@/lib/auth-client";
 
 import NotificationMenu from "../navbar-components/notification-menu";
 import ThemeToggle from "../navbar-components/theme-toggle";
-import UserMenu from "../navbar-components/user-menu";
 import { Button } from "../ui/button";
+import UserMenu from "../user/user-menu";
 
 export type AuthMenuProps = {};
 

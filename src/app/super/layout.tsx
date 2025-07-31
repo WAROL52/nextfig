@@ -13,7 +13,7 @@ import {
     SidebarTrigger,
 } from "@/components/ui/sidebar";
 
-import { SuperSidebar } from "@/components/super-sidebar";
+import { SuperSidebar } from "@/components/super/super-sidebar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (

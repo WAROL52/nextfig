@@ -1,10 +1,15 @@
 "use client";
 
-export type LogoProps = {};
+import { cn } from "@/lib/utils";
 
-export function Logo({}: LogoProps) {
+export type LogoProps = {
+    className?: string;
+};
+
+export function Logo({ className }: LogoProps) {
     return (
         <svg
+            className={cn(className)}
             xmlns="http://www.w3.org/2000/svg"
             width="33"
             height="33"

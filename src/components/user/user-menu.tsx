@@ -13,9 +13,9 @@ import { authClient } from "@/lib/auth-client";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 import { SignOutButton } from "../auth/sign-out-button";
-import { UserAvatar } from "../auth/user-avatar";
 import { LinkAuto } from "../link-auto";
 import { Button } from "../ui/button";
+import { UserAvatar } from "./user-avatar";
 
 export default function UserMenu() {
     const { data: session } = authClient.useSession();

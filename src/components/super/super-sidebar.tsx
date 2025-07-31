@@ -3,7 +3,6 @@
 import {
     BookOpen,
     Bot,
-    Command,
     Frame,
     LifeBuoy,
     Map,
@@ -25,10 +24,15 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-import { NavMain } from "@/components/nav-main";
-import { NavProjects } from "@/components/nav-projects";
-import { NavSecondary } from "@/components/nav-secondary";
-import { NavUser } from "@/components/nav-user";
+import { NavMain } from "@/components/super/nav-main";
+import { NavProjects } from "@/components/super/nav-projects";
+import { NavSecondary } from "@/components/super/nav-secondary";
+import { NavUser } from "@/components/super/nav-user";
+
+import { Info } from "@/provider";
+
+import { LinkAuto } from "../link-auto";
+import { Logo } from "../logo";
 
 const data = {
     user: {
@@ -163,19 +167,19 @@ export function SuperSidebar({
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <a href="#">
-                                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                                    <Command className="size-4" />
+                            <LinkAuto to="home">
+                                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-10 items-center justify-center rounded-lg">
+                                    <Logo />
                                 </div>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
                                     <span className="truncate font-medium">
-                                        Acme Inc
+                                        {Info.projectName}
                                     </span>
                                     <span className="truncate text-xs">
-                                        Enterprise
+                                        Super Admin
                                     </span>
                                 </div>
-                            </a>
+                            </LinkAuto>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
