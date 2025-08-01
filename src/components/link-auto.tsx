@@ -33,14 +33,14 @@ export function LinkAuto<T extends UrlLinkName>({
         const paramsKeys: keyof typeof params = (
             Object.keys(params) as Array<keyof typeof params>
         )[0];
-        urlLink.href += `/${params[paramsKeys]}`;
+        urlLink.url += `/${params[paramsKeys]}`;
     }
     const IconComponent = urlLink.icon;
     const searchParamsString = searchParams
         ? `?${new URLSearchParams(searchParams).toString()}`
         : "";
     return (
-        <Link href={`${urlLink.href}${searchParamsString}`} {...props}>
+        <Link href={`${urlLink.url}${searchParamsString}`} {...props}>
             <span className="flex items-center gap-1">
                 {withIcon && <IconComponent className="mr-2" />}
                 {children || urlLink.label}

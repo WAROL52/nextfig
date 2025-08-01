@@ -23,7 +23,7 @@ export type UseSignInFormProps = {
 };
 
 export function useSignInForm({
-    callbackURL = urlLinks.account.href,
+    callbackURL = urlLinks.account.url,
 }: UseSignInFormProps = {}) {
     const router = useRouter();
     return useMutationForm(signInFormSchema, {

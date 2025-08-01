@@ -40,7 +40,7 @@ export type useSignUpFormProps = {
 };
 
 export function useSignUpForm({
-    callbackURL = urlLinks.account.href,
+    callbackURL = urlLinks.account.url,
 }: useSignUpFormProps = {}) {
     const router = useRouter();
     return useMutationForm(signUpFormSchema, {

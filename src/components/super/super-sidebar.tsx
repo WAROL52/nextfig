@@ -1,15 +1,12 @@
 "use client";
 
 import {
-    BookOpen,
-    Bot,
-    Frame,
+    DatabaseIcon,
+    FlagIcon,
     LifeBuoy,
-    Map,
-    PieChart,
+    LogsIcon,
+    MessageCircleIcon,
     Send,
-    Settings2,
-    SquareTerminal,
 } from "lucide-react";
 
 import * as React from "react";
@@ -30,6 +27,7 @@ import { NavSecondary } from "@/components/super/nav-secondary";
 import { NavUser } from "@/components/super/nav-user";
 
 import { Info } from "@/provider";
+import { urlLinks } from "@/url-links";
 
 import { LinkAuto } from "../link-auto";
 import { Logo } from "../logo";
@@ -37,88 +35,45 @@ import { Logo } from "../logo";
 const data = {
     navMain: [
         {
-            title: "Playground",
-            url: "#",
-            icon: SquareTerminal,
-            isActive: true,
+            ...urlLinks["super.users.management"],
             items: [
-                {
-                    title: "History",
-                    url: "#",
-                },
-                {
-                    title: "Starred",
-                    url: "#",
-                },
-                {
-                    title: "Settings",
-                    url: "#",
-                },
+                urlLinks["super.users"],
+                urlLinks["super.users.activity"],
+                urlLinks["super.users.accessControl"],
             ],
         },
         {
-            title: "Models",
-            url: "#",
-            icon: Bot,
+            ...urlLinks["super.accessControl"],
             items: [
-                {
-                    title: "Genesis",
-                    url: "#",
-                },
-                {
-                    title: "Explorer",
-                    url: "#",
-                },
-                {
-                    title: "Quantum",
-                    url: "#",
-                },
+                urlLinks["super.accessControl.roles"],
+                urlLinks["super.accessControl.attributes"],
+                urlLinks["super.accessControl.resources"],
+                urlLinks["super.accessControl.permissions"],
+                urlLinks["super.accessControl.jit"],
             ],
         },
         {
-            title: "Documentation",
-            url: "#",
-            icon: BookOpen,
+            ...urlLinks["super.organizations.management"],
             items: [
-                {
-                    title: "Introduction",
-                    url: "#",
-                },
-                {
-                    title: "Get Started",
-                    url: "#",
-                },
-                {
-                    title: "Tutorials",
-                    url: "#",
-                },
-                {
-                    title: "Changelog",
-                    url: "#",
-                },
+                urlLinks["super.organizations"],
+                urlLinks["super.organizations.activity"],
+                urlLinks["super.organizations.accessControl"],
             ],
         },
         {
-            title: "Settings",
-            url: "#",
-            icon: Settings2,
+            ...urlLinks["super.projects.management"],
             items: [
-                {
-                    title: "General",
-                    url: "#",
-                },
-                {
-                    title: "Team",
-                    url: "#",
-                },
-                {
-                    title: "Billing",
-                    url: "#",
-                },
-                {
-                    title: "Limits",
-                    url: "#",
-                },
+                urlLinks["super.projects"],
+                urlLinks["super.projects.activity"],
+                urlLinks["super.projects.accessControl"],
+            ],
+        },
+        {
+            ...urlLinks["super.teams.management"],
+            items: [
+                urlLinks["super.teams"],
+                urlLinks["super.teams.activity"],
+                urlLinks["super.teams.accessControl"],
             ],
         },
     ],
@@ -136,19 +91,24 @@ const data = {
     ],
     projects: [
         {
-            name: "Design Engineering",
+            name: "Prisma Studio",
             url: "#",
-            icon: Frame,
+            icon: DatabaseIcon,
         },
         {
-            name: "Sales & Marketing",
+            name: "Contact Center",
             url: "#",
-            icon: PieChart,
+            icon: MessageCircleIcon,
         },
         {
-            name: "Travel",
+            name: "Signals",
             url: "#",
-            icon: Map,
+            icon: FlagIcon,
+        },
+        {
+            name: "Logs",
+            url: "#",
+            icon: LogsIcon,
         },
     ],
 };
@@ -161,10 +121,6 @@ export function SuperSidebar({
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <LinkAuto
-                            to="super.users:email"
-                            params={{ email: "gd" }}
-                        />
                         <SidebarMenuButton size="lg" asChild>
                             <LinkAuto to="home">
                                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-10 items-center justify-center rounded-lg">

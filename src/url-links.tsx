@@ -1,6 +1,9 @@
 import {
     Bell,
+    BookUserIcon,
+    GlobeLockIcon,
     Home,
+    IdCardIcon,
     LayoutDashboardIcon,
     LogInIcon,
     LogOutIcon,
@@ -20,7 +23,7 @@ import { ForwardRefExoticComponent, RefAttributes } from "react";
 import { cn } from "./lib/utils";
 
 export type UrlLink = {
-    href: string;
+    url: string;
     label: string;
     icon: ForwardRefExoticComponent<
         Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
@@ -56,79 +59,204 @@ function createUrlLink<K extends string, V extends UrlLink>(
 
 export const urlLinks = createUrlLink({
     home: {
-        href: "/",
+        url: "/",
         label: "Home",
         icon: Home,
     },
     account: {
-        href: "/account",
+        url: "/account",
         label: "Account",
         icon: UserCircle,
     },
     org: {
-        href: "/org",
+        url: "/org",
         label: "Organizations",
         icon: LayoutDashboardIcon,
     },
     settings: {
-        href: "/settings",
+        url: "/settings",
         label: "Settings",
         icon: Settings,
     },
     notifications: {
-        href: "/notifications",
+        url: "/notifications",
         label: "Notifications",
         icon: Bell,
     },
     signIn: {
-        href: "/sign-in",
+        url: "/sign-in",
         label: "Sign In",
         icon: LogInIcon,
     },
     signUp: {
-        href: "/sign-up",
+        url: "/sign-up",
         label: "Sign Up",
         icon: PlusIcon,
     },
     signOut: {
-        href: "/sign-out",
+        url: "/sign-out",
         label: "Sign Out",
         icon: LogOutIcon,
     },
     forgotPassword: {
-        href: "/forgot-password",
+        url: "/forgot-password",
         label: "Forgot Password",
         icon: RectangleEllipsisIcon,
     },
     resetPassword: {
-        href: "/reset-password",
+        url: "/reset-password",
         label: "Reset Password",
         icon: RotateCcwKeyIcon,
     },
     super: {
-        href: "/super",
+        url: "/super",
         label: "Super",
         icon: ShieldUserIcon,
     },
     admin: {
-        href: "/admin",
+        url: "/admin",
         label: "Admin",
         icon: UserLockIcon,
     },
+    ["super.users.management"]: {
+        url: "/super/users-management",
+        label: "User Management",
+        icon: IdCardIcon,
+    },
     ["super.users"]: {
-        href: "/super/users",
-        label: "Users",
+        url: "/super/users",
+        label: "Users List",
         icon: UsersIcon,
     },
     ["super.users:id"]: {
-        href: "/super/users",
-        label: "Account",
+        url: "/super/users",
+        label: "User Account",
         icon: UserCircle,
     },
-    ["super.users:email"]: {
-        href: "/super/users",
-        label: "Account",
-        icon: UserCircle,
+    ["super.users.activity"]: {
+        url: "/super/users/activity",
+        label: "User Activity",
+        icon: BookUserIcon,
+    },
+    ["super.users.accessControl"]: {
+        url: "/super/users/access-control",
+        label: "Access Control",
+        icon: UserLockIcon,
+    },
+    ["super.accessControl"]: {
+        url: "/super/access-control",
+        label: "Access Control",
+        icon: GlobeLockIcon,
+    },
+    ["super.accessControl.roles"]: {
+        url: "/super/access-control/roles",
+        label: "Roles",
+        icon: ShieldUserIcon,
+    },
+    ["super.accessControl.attributes"]: {
+        url: "/super/access-control/attributes",
+        label: "Attributes",
+        icon: ShieldUserIcon,
+    },
+    ["super.accessControl.resources"]: {
+        url: "/super/access-control/resources",
+        label: "Resources",
+        icon: ShieldUserIcon,
+    },
+    ["super.accessControl.permissions"]: {
+        url: "/super/access-control/permissions",
+        label: "Permissions",
+        icon: ShieldUserIcon,
+    },
+    ["super.accessControl.jit"]: {
+        url: "/super/access-control/jit",
+        label: "Just-in-Time",
+        icon: ShieldUserIcon,
+    },
+    ["super.organizations.management"]: {
+        url: "/super/organizations-management",
+        label: "Organizations",
+        icon: LayoutDashboardIcon,
+    },
+    ["super.organizations"]: {
+        url: "/super/organizations",
+        label: "Organizations List",
+        icon: LayoutDashboardIcon,
+    },
+    ["super.organizations:id"]: {
+        url: "/super/organizations",
+        label: "Organization Details",
+        icon: LayoutDashboardIcon,
+    },
+    ["super.organizations.activity"]: {
+        url: "/super/organizations/activity",
+        label: "Organization Activity",
+        icon: BookUserIcon,
+    },
+    ["super.organizations.accessControl"]: {
+        url: "/super/organizations/access-control",
+        label: "Access Control",
+        icon: GlobeLockIcon,
+    },
+    ["super.organizations.teams:id"]: {
+        url: "/super/organizations/teams",
+        label: "Team Details",
+        icon: UsersIcon,
+    },
+    ["super.projects.management"]: {
+        url: "/super/projects/management",
+        label: "Project Management",
+        icon: LayoutDashboardIcon,
+    },
+    ["super.projects"]: {
+        url: "/super/projects",
+        label: "Projects List",
+        icon: LayoutDashboardIcon,
+    },
+    ["super.projects:id"]: {
+        url: "/super/projects",
+        label: "Project Details",
+        icon: LayoutDashboardIcon,
+    },
+    ["super.projects.activity"]: {
+        url: "/super/projects/activity",
+        label: "Project Activity",
+        icon: BookUserIcon,
+    },
+    ["super.projects.accessControl"]: {
+        url: "/super/projects/access-control",
+        label: "Access Control",
+        icon: GlobeLockIcon,
+    },
+    ["super.teams.management"]: {
+        url: "/super/teams-management",
+        label: "Team Management",
+        icon: UsersIcon,
+    },
+    ["super.teams"]: {
+        url: "/super/teams",
+        label: "Teams List",
+        icon: UsersIcon,
+    },
+    ["super.teams:id"]: {
+        url: "/super/teams",
+        label: "Team Details",
+        icon: UsersIcon,
+    },
+    ["super.teams.activity"]: {
+        url: "/super/teams/activity",
+        label: "Team Activity",
+        icon: BookUserIcon,
+    },
+    ["super.teams.accessControl"]: {
+        url: "/super/teams/access-control",
+        label: "Access Control",
+        icon: GlobeLockIcon,
+    },
+    ["super.teams.projects"]: {
+        url: "/super/teams/projects",
+        label: "Projects",
+        icon: LayoutDashboardIcon,
     },
 });
 export type UrlLinkName = keyof typeof urlLinks;

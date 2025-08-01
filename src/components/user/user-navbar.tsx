@@ -29,7 +29,7 @@ export function UserNavbar({}: UserNavbarProps) {
     const path = usePathname();
     const navigationLinks = accountNavigations.map((link) => ({
         ...link,
-        active: path.startsWith(link.href),
+        active: path.startsWith(link.url),
     }));
     return (
         <header className="border-b px-4 md:px-6">

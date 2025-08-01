@@ -43,7 +43,7 @@ export function useResetPasswordForm({
             if (response.error) {
                 throw response.error;
             }
-            router.push(urlLinks.signIn.href);
+            router.push(urlLinks.signIn.url);
             return response;
         },
     });

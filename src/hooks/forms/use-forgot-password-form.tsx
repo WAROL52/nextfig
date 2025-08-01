@@ -19,7 +19,7 @@ export function useForgotPasswordForm({}: UseForgotPasswordFormProps = {}) {
         name: "Reset Password",
         onSubmit: async ({ email }) => {
             const redirectTo =
-                window.location.origin + urlLinks.resetPassword.href;
+                window.location.origin + urlLinks.resetPassword.url;
 
             const response = await authClient.requestPasswordReset({
                 email: email, // required
