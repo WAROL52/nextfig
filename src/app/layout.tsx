@@ -3,9 +3,12 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import { Toaster } from "@/components/ui/sonner";
 
+// for pre-rendering
+
 import { QueryProvider } from "@/components/query-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 
+import "../lib/orpc.server";
 import "./globals.css";
 
 const geistSans = Geist({

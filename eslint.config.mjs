@@ -19,6 +19,7 @@ const eslintConfig = [
             "prefer-arrow-callback": "warn",
             "@typescript-eslint/no-explicit-any": "off",
             "@typescript-eslint/no-empty-object-type": "off",
+            "@typescript-eslint/no-namespace": "off",
             "react/no-unescaped-entities": "off",
             quotes: ["warn", "double"],
             "prefer-template": "warn",

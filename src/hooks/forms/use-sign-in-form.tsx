@@ -1,22 +1,15 @@
 "use client";
 
 import { toast } from "sonner";
-import z from "zod";
 
 import { useRouter } from "next/navigation";
 
 import { authClient } from "@/lib/auth-client";
 
+import { authSchema } from "@/schemas/auth";
 import { urlLinks } from "@/url-links";
 
 import { useMutationForm } from "./use-mutation-form";
-
-export const signInFormSchema = z.object({
-    email: z.string().email(),
-    password: z.string().min(7),
-    rememberMe: z.boolean().optional(),
-});
-export type SignInFormData = z.infer<typeof signInFormSchema>;
 
 export type UseSignInFormProps = {
     callbackURL?: string;
@@ -26,7 +19,7 @@ export function useSignInForm({
     callbackURL = urlLinks.account.url,
 }: UseSignInFormProps = {}) {
     const router = useRouter();
-    return useMutationForm(signInFormSchema, {
+    return useMutationForm(authSchema.signIn, {
         name: "sign-in",
         onSubmit: async (data) => {
             const response = await authClient.signIn.email({
