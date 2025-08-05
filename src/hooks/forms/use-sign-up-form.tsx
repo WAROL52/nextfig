@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { signUp } from "@/lib/auth-client";
 import { convertFileToBase64 } from "@/lib/utils";
 
-import { authSchema } from "@/schemas/auth";
+import { authSchema } from "@/schemas/auth.schema";
 import { urlLinks } from "@/url-links";
 
 import { useMutationForm } from "./use-mutation-form";

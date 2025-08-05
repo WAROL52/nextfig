@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 
 import { authClient } from "@/lib/auth-client";
 
-import { authSchema } from "@/schemas/auth";
+import { authSchema } from "@/schemas/auth.schema";
 import { urlLinks } from "@/url-links";
 
 import { useMutationForm } from "./use-mutation-form";
