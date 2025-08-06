@@ -2,24 +2,20 @@ import { orpc } from "@/lib/orpc";
 import { HydrateClient, getQueryClient } from "@/lib/query/hydration";
 
 import { ClientComponent } from "./client-component";
+import { buildPrismaWhere } from "./ressource";
 
 type PageProps = {
-    searchParams: Promise<{
-        emailOrder: "asc" | "desc" | undefined;
-    }>;
+    searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
 export default async function Page({ searchParams }: PageProps) {
-    const { emailOrder } = await searchParams;
+    const params = await searchParams;
+    const where = buildPrismaWhere(params);
     const queryClient = getQueryClient();
 
     queryClient.prefetchQuery(
         orpc.user.list.queryOptions({
-            input: {
-                orderBy: {
-                    email: emailOrder,
-                },
-            },
+            input: where,
         })
     );
 
