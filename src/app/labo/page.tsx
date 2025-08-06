@@ -13,9 +13,14 @@ export default async function Page({ searchParams }: PageProps) {
     const where = buildPrismaWhere(params);
     const queryClient = getQueryClient();
 
+    console.log("Search Params:", params);
+    console.log("Prisma Where:", where);
+
     queryClient.prefetchQuery(
         orpc.user.list.queryOptions({
-            input: where,
+            input: {
+                where,
+            },
         })
     );
 

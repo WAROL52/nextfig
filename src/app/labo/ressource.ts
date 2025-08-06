@@ -36,6 +36,8 @@ export function buildPrismaWhere(
 // 🔁 Convertit les opérateurs de l'URL vers Prisma
 function mapOperator(op: string): string {
     switch (op) {
+        case "eq":
+            return "equals";
         case "gt":
             return "gt";
         case "gte":
