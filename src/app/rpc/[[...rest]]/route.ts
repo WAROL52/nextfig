@@ -1,8 +1,11 @@
 import { RPCHandler } from "@orpc/server/fetch";
+import { StrictGetMethodPlugin } from "@orpc/server/plugins";
 
 import { router } from "@/router";
 
-const handler = new RPCHandler(router);
+const handler = new RPCHandler(router, {
+    plugins: [new StrictGetMethodPlugin()],
+});
 
 async function handleRequest(request: Request) {
     const { response } = await handler.handle(request, {

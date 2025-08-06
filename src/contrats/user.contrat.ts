@@ -1,33 +1,29 @@
 import { oc } from "@orpc/contract";
 import z from "zod";
 
-import prisma from "@/lib/prisma";
-
 import {
-    UserCreateInputObjectSchema,
-    UserCreateOneSchema,
-    UserFindFirstSchema,
-    UserFindManySchema,
-    UserFindUniqueSchema,
-} from "@/generated/schemas";
+    UserFindFirstArgsSchema,
+    UserFindManyArgsSchema,
+    UserFindUniqueArgsSchema,
+    UserSchema,
+} from "@/generated/zod";
 
 const listUserContract = oc
-    .input(UserFindManySchema)
-    .output(UserCreateInputObjectSchema.array());
+    .route({
+        method: "GET",
+        inputStructure: "compact",
+    })
+    .input(UserFindManyArgsSchema)
+    .output(UserSchema.array());
 
 const findUniqueUserContract = oc
-    .input(UserFindUniqueSchema)
-    .output(UserCreateOneSchema);
+    .input(UserFindUniqueArgsSchema)
+    .output(UserSchema.or(z.null()));
 const findFirstUserContract = oc
-    .input(UserFindFirstSchema)
-    .output(UserCreateOneSchema);
+    .input(UserFindFirstArgsSchema)
+    .output(UserSchema.or(z.null()));
 export const userContract = {
     list: listUserContract,
     findUnique: findUniqueUserContract,
     findFirst: findFirstUserContract,
 };
-let arg: z.infer<typeof UserCreateInputObjectSchema>;
-let argCreate: z.infer<typeof UserCreateInputObjectSchema>;
-
-prisma.user.findMany(arg);
-prisma.user.create(argCreate);

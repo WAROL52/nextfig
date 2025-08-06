@@ -1,3 +1,5 @@
+import { NuqsAdapter } from "nuqs/adapters/next/app";
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
@@ -42,17 +44,19 @@ export default function RootLayout({
             <body
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
-                <QueryProvider>
-                    <ThemeProvider
-                        attribute="class"
-                        defaultTheme="system"
-                        enableSystem
-                        disableTransitionOnChange
-                    >
-                        {children}
-                        <Toaster />
-                    </ThemeProvider>
-                </QueryProvider>
+                <NuqsAdapter>
+                    <QueryProvider>
+                        <ThemeProvider
+                            attribute="class"
+                            defaultTheme="system"
+                            enableSystem
+                            disableTransitionOnChange
+                        >
+                            {children}
+                            <Toaster />
+                        </ThemeProvider>
+                    </QueryProvider>
+                </NuqsAdapter>
             </body>
         </html>
     );
