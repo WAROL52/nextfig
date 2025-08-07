@@ -207,6 +207,16 @@ import { Operator } from "./use-filters-to-prisma-where";
 
 // components/ResourceFilter.tsx
 
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
 type Field = string;
 interface ResourceFilterProps {
     fields: Field[];
@@ -273,7 +283,7 @@ export function ResourceFilter({
             [field]: (prev[field] || []).filter((op) => op !== operator),
         }));
     };
-    const removeFirstOperator = () => {
+    const getFirst = () => {
         // find fisrt field what has an operator
         const firstFieldWithOperator = Object.keys(selectedOperators).find(
             (field) => selectedOperators[field].length > 0
@@ -284,23 +294,41 @@ export function ResourceFilter({
         if (!selectedOperators[firstFieldWithOperator]) {
             return;
         }
-        const firstOperator = selectedOperators[firstFieldWithOperator][1];
+        const firstOperator = selectedOperators[firstFieldWithOperator][0];
         if (!firstOperator) {
             return;
         }
-        removeOperator(firstFieldWithOperator, firstOperator);
-        return [firstFieldWithOperator, firstOperator] as const;
+
+        return {
+            field: firstFieldWithOperator,
+            operator: firstOperator,
+        };
     };
+    const first = getFirst();
 
     const map = useMap<number, FilterItem>([]);
 
     const fieldsHavingOperators = Object.keys(selectedOperators).filter(
         (field) => selectedOperators[field].length > 0
     );
-
+    const addItem = () => {
+        if (map.size === fields.length * operators.length) {
+            return;
+        }
+        if (first) {
+            removeOperator(first.field, first.operator);
+            map.set((map.keys().toArray().at(-1) || 0) + 1, {
+                field: first.field,
+                value: "",
+                show: true,
+                operator: first.operator,
+            });
+        }
+    };
     return (
         <div className="flex items-center justify-between space-x-2">
             <pre>{JSON.stringify(Array.from(map.entries()), null, 2)}</pre>
+            <pre>{JSON.stringify(first, null, 2)}</pre>
             <Popover open>
                 <PopoverTrigger>
                     <Button>
@@ -320,30 +348,7 @@ export function ResourceFilter({
                         >
                             <FilterXIcon />
                         </Button>
-                        <Button
-                            size={"sm"}
-                            onClick={() => {
-                                if (
-                                    map.size ===
-                                    fields.length * operators.length
-                                ) {
-                                    return;
-                                }
-                                const firstRm = removeFirstOperator();
-                                if (firstRm) {
-                                    const [field, operator] = firstRm;
-                                    map.set(
-                                        (map.keys().toArray().at(-1) || 0) + 1,
-                                        {
-                                            field,
-                                            value: "",
-                                            show: true,
-                                            operator,
-                                        }
-                                    );
-                                }
-                            }}
-                        >
+                        <Button size={"sm"} onClick={addItem}>
                             <PlusIcon /> Add Filter
                         </Button>
                     </div>
