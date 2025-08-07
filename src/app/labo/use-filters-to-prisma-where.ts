@@ -4,7 +4,7 @@ import { useMemo } from "react";
 
 import { buildPrismaWhere } from "./ressource";
 
-type Operator =
+export type Operator =
     | "eq"
     | "like"
     | "contains"
@@ -17,7 +17,7 @@ type Operator =
     | "in"
     | "not";
 
-const operators: Operator[] = ["eq", "like", "lt", "lte", "gt", "gte"];
+export const operators: Operator[] = ["eq", "like", "lt", "lte", "gt", "gte"];
 export function useFiltersToPrismaWhere(fields: string[]) {
     // Build query keys dynamically based on fields and operators
     const querySchema = useMemo(() => {
@@ -50,5 +50,7 @@ export function useFiltersToPrismaWhere(fields: string[]) {
         filters,
         setFilters,
         where,
+        operators,
+        fields,
     };
 }

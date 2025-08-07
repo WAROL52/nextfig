@@ -10,10 +10,8 @@ import { useFiltersToPrismaWhere } from "./use-filters-to-prisma-where";
 export type ClientComponentProps = {};
 
 export function ClientComponent({}: ClientComponentProps) {
-    const { filters, setFilters, where } = useFiltersToPrismaWhere([
-        "email",
-        "name",
-    ]);
+    const { filters, setFilters, where, fields, operators } =
+        useFiltersToPrismaWhere(["email", "name"]);
     console.log("Filters:", filters);
     console.log("Where clause:", where);
 
@@ -22,26 +20,24 @@ export function ClientComponent({}: ClientComponentProps) {
             input: { where },
         })
     );
-    if (query.isLoading) {
-        return <div>Loading...</div>;
-    }
 
     if (query.isError) {
         return <div>Error: {query.error.message}</div>;
     }
 
     return (
-        <div>
-            <h1>Users</h1>
+        <div className="container mx-auto p-4">
+            <h1>Users {query.isLoading ? "Loading..." : ""} </h1>
             <div>
                 <ResourceFilter
-                    fields={["email", "name"]}
+                    fields={fields}
                     filters={filters}
                     setFilters={setFilters}
+                    operators={operators}
                 />
             </div>
             <ul>
-                {query.data!.map((user) => (
+                {query.data?.map((user) => (
                     <li key={user.id}>
                         {user.email} - {user.name}
                     </li>
