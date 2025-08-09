@@ -1,7 +1,7 @@
 // components/ResourceFilter.tsx
 "use client";
 
-import { useMap } from "@mantine/hooks";
+import { UseListStateHandlers, useListState } from "@mantine/hooks";
 import {
     DeleteIcon,
     FilterXIcon,
@@ -9,8 +9,6 @@ import {
     PlusIcon,
 } from "lucide-react";
 import { ParserBuilder, SetValues, Values } from "nuqs";
-
-import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +30,50 @@ import {
 import { cn } from "@/lib/utils";
 
 import { Operator } from "./use-filters-to-prisma-where";
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
 
 // components/ResourceFilter.tsx
 
@@ -247,87 +289,54 @@ type FilterItem = {
     operator: Operator;
 };
 
-export function ResourceFilter({
-    fields,
-    filters,
-    setFilters,
-    operators,
-}: ResourceFilterProps) {
-    const [selectedOperators, setSelectedOperators] = useState(
-        Object.fromEntries(fields.map((field) => [field, operators]))
+export function ResourceFilter({ fields, operators }: ResourceFilterProps) {
+    const allFilters: FilterItem[] = fields.flatMap((field) =>
+        operators.map((operator) => ({
+            field,
+            value: "",
+            show: true,
+            operator,
+        }))
     );
-
-    const addOperator = (field: string, operator: Operator) => {
-        if (!selectedOperators[field]) {
-            return;
-        }
-        if (selectedOperators[field].includes(operator)) {
-            return; // Already selected
-        }
-        setSelectedOperators((prev) => ({
-            ...prev,
-            [field]: [...(prev[field] || []), operator],
-        }));
+    const [listRest, setListRest] = useListState<FilterItem>(allFilters);
+    const [listSearch, setListSearch] = useListState<FilterItem>([]);
+    const first = listRest[0] || null;
+    const clearSearch = () => {
+        setListSearch.setState([]);
+        setListRest.setState(allFilters);
     };
-
-    const removeOperator = (field: string, operator: Operator) => {
-        if (!selectedOperators[field]) {
-            return;
-        }
-        if (!selectedOperators[field].includes(operator)) {
-            return; // Not selected
-        }
-        // Otherwise, just remove the operator
-        setSelectedOperators((prev) => ({
-            ...prev,
-            [field]: (prev[field] || []).filter((op) => op !== operator),
-        }));
-    };
-    const getFirst = () => {
-        // find fisrt field what has an operator
-        const firstFieldWithOperator = Object.keys(selectedOperators).find(
-            (field) => selectedOperators[field].length > 0
-        );
-        if (!firstFieldWithOperator) {
-            return;
-        }
-        if (!selectedOperators[firstFieldWithOperator]) {
-            return;
-        }
-        const firstOperator = selectedOperators[firstFieldWithOperator][0];
-        if (!firstOperator) {
-            return;
-        }
-
-        return {
-            field: firstFieldWithOperator,
-            operator: firstOperator,
-        };
-    };
-    const first = getFirst();
-
-    const map = useMap<number, FilterItem>([]);
-
-    const fieldsHavingOperators = Object.keys(selectedOperators).filter(
-        (field) => selectedOperators[field].length > 0
-    );
-    const addItem = () => {
-        if (map.size === fields.length * operators.length) {
-            return;
-        }
+    const addFirst = () => {
         if (first) {
-            removeOperator(first.field, first.operator);
-            map.set((map.keys().toArray().at(-1) || 0) + 1, {
-                field: first.field,
-                value: "",
-                show: true,
-                operator: first.operator,
-            });
+            setListRest.filter(
+                (item) =>
+                    item.field + item.operator !== first.field + first.operator
+            );
+            setListSearch.append(first);
         }
     };
+    const removeSearch = (item: FilterItem, index: number) => {
+        setListSearch.remove(index);
+        setListRest.setState((current) => [...current, item]);
+    };
+    const listRestSorted = listRest.sort((a, b) => {
+        const fieldA = a.field.toLowerCase() + a.operator.toLowerCase();
+        const fieldB = b.field.toLowerCase() + b.operator.toLowerCase();
+        return fieldA.localeCompare(fieldB);
+    });
+    const listSearchSorted = listSearch.sort((a, b) => {
+        const fieldA = a.field.toLowerCase() + a.operator.toLowerCase();
+        const fieldB = b.field.toLowerCase() + b.operator.toLowerCase();
+        return fieldA.localeCompare(fieldB);
+    });
     return (
         <div className="flex items-center justify-between space-x-2">
-            <pre>{JSON.stringify(Array.from(map.entries()), null, 2)}</pre>
+            <div>
+                {listRestSorted.map((item) => (
+                    <div key={item.field + item.operator}>
+                        {item.field} {item.operator}
+                    </div>
+                ))}
+            </div>
             <pre>{JSON.stringify(first, null, 2)}</pre>
             <Popover open>
                 <PopoverTrigger>
@@ -338,44 +347,37 @@ export function ResourceFilter({
                 <PopoverContent className="w-[500px] space-y-3">
                     <div className="flex items-center justify-end space-x-2">
                         <span>
-                            {map.size}/{fields.length * operators.length} filter
-                            {map.size > 1 ? "s" : ""}
+                            {listSearch.length}/{allFilters.length} filter
+                            {listSearch.length > 1 ? "s" : ""}
                         </span>
                         <Button
                             size={"icon"}
                             variant={"outline"}
-                            onClick={() => map.clear()}
+                            onClick={clearSearch}
                         >
                             <FilterXIcon />
                         </Button>
-                        <Button size={"sm"} onClick={addItem}>
+                        <Button size={"sm"} onClick={addFirst}>
                             <PlusIcon /> Add Filter
                         </Button>
                     </div>
                     <div className="mt-2 max-h-[300px] space-y-1 overflow-y-auto rounded-md border p-2">
-                        {map.entries().map(([key, value]) => (
+                        {listSearch.map((item, index) => (
                             <div
-                                key={key}
+                                key={item.field + item.operator}
                                 className="flex items-center space-x-2"
                             >
                                 <FilterField
-                                    item={value}
-                                    addOperator={addOperator}
-                                    removeOperator={removeOperator}
-                                    fieldsHavingOperators={
-                                        fieldsHavingOperators
-                                    }
-                                    onItemChange={(item) => {
-                                        map.set(key, item);
-                                    }}
-                                    operatorAvailable={
-                                        selectedOperators[value.field] || []
-                                    }
+                                    item={item}
+                                    listRest={listRestSorted}
+                                    listSearch={listSearchSorted}
+                                    setListSearch={setListSearch}
+                                    setListRest={setListRest}
                                 />
                                 <Button
                                     size={"icon"}
                                     variant={"ghost"}
-                                    onClick={() => map.delete(key)}
+                                    onClick={() => removeSearch(item, index)}
                                 >
                                     <DeleteIcon />
                                 </Button>
@@ -386,56 +388,100 @@ export function ResourceFilter({
             </Popover>
             <div>
                 selectedOperators
-                <pre>{JSON.stringify(selectedOperators, null, 2)}</pre>
-                fields
-                <pre>{JSON.stringify(fields, null, 2)}</pre>
+                <div>
+                    {listSearchSorted.map((item) => (
+                        <div key={item.field + item.operator}>
+                            {item.field} {item.operator}
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );
 }
-
-function FilterField({
-    item,
-    fieldsHavingOperators,
-    addOperator,
-    removeOperator,
-    onItemChange,
-    operatorAvailable,
-}: {
+type FilterFieldProps = {
     item: FilterItem;
-    fieldsHavingOperators: string[];
-    addOperator: (field: string, operator: Operator) => void;
-    removeOperator: (field: string, operator: Operator) => void;
-    onItemChange: (item: FilterItem) => void;
-    operatorAvailable: Operator[];
-}) {
-    const fieldOptions = fieldsHavingOperators;
+    setListRest: UseListStateHandlers<FilterItem>;
+    listRest: FilterItem[];
+    listSearch: FilterItem[];
+    setListSearch: UseListStateHandlers<FilterItem>;
+};
+
+function FilterField(props: FilterFieldProps) {
+    const { item, listRest, setListRest, setListSearch } = props;
+    const fieldOptions: string[] = [];
+    listRest.map((item) => {
+        if (!fieldOptions.includes(item.field)) {
+            fieldOptions.push(item.field);
+        }
+    });
     if (!fieldOptions.includes(item.field)) {
         fieldOptions.unshift(item.field);
     }
+    const operatorAvailable = listRest
+        .filter((i) => i.field === item.field)
+        .map((i) => i.operator);
     return (
         <div className="flex items-center space-x-2">
             <SelectField
                 fieldOptions={fieldOptions}
                 fieldValue={item.field}
-                onChange={(value) => {
-                    if (!value) return;
-                    console.log("Selected field:", value, item.operator);
-
-                    addOperator(item.field, item.operator);
-                    removeOperator(value, item.operator);
-                    item.field = value;
-                    onItemChange(item);
+                onChange={(field) => {
+                    if (!field) return;
+                    const newItem = listRest.find(
+                        (i) => i.field === field && i.operator === item.operator
+                    );
+                    if (!newItem) {
+                        return;
+                    }
+                    item.value = "";
+                    setListRest.setState((current) => [
+                        ...current.filter(
+                            (i) =>
+                                i.field !== newItem.field ||
+                                i.operator !== newItem.operator
+                        ),
+                        item,
+                    ]);
+                    setListSearch.setState((current) => [
+                        ...current.filter(
+                            (i) =>
+                                i.field !== item.field ||
+                                i.operator !== item.operator
+                        ),
+                        newItem,
+                    ]);
                 }}
             />
             <SelectOperator
                 operators={operatorAvailable}
                 value={item.operator}
-                onChange={(value) => {
-                    item.operator = value;
-                    addOperator(item.field, item.operator);
-                    removeOperator(item.field, value);
-                    onItemChange(item);
+                onChange={(operator) => {
+                    if (!operator) return;
+                    if (item.operator === operator) return;
+                    const newItem = listRest.find(
+                        (i) => i.field === item.field && i.operator === operator
+                    );
+                    if (!newItem) {
+                        return;
+                    }
+                    item.value = "";
+                    setListRest.setState((current) => [
+                        ...current.filter(
+                            (i) =>
+                                i.field !== newItem.field ||
+                                i.operator !== newItem.operator
+                        ),
+                        item,
+                    ]);
+                    setListSearch.setState((current) => [
+                        ...current.filter(
+                            (i) =>
+                                i.field !== item.field ||
+                                i.operator !== item.operator
+                        ),
+                        newItem,
+                    ]);
                 }}
             />
             <InputQuery field={item.field} operator={item.operator} />

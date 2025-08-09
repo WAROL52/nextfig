@@ -3,6 +3,7 @@ import z from "zod";
 const forgotPasswordSchema = z.object({
     email: z.string().email(),
 });
+
 const resetPasswordSchema = z
     .object({
         token: z.string().min(6, "Token is required"),
@@ -13,6 +14,7 @@ const resetPasswordSchema = z
         message: "Passwords don't match",
         path: ["confirmPassword"],
     });
+
 const signInFormSchema = z.object({
     email: z.string().email(),
     password: z.string().min(7),
