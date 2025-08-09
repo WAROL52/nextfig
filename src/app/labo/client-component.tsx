@@ -5,15 +5,18 @@ import { useQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 
 import { ResourceFilter } from "./resource-filter";
-import { useFiltersToPrismaWhere } from "./use-filters-to-prisma-where";
+import { useRessourceFilter } from "./use-ressource-filter";
 
 export type ClientComponentProps = {};
 
 export function ClientComponent({}: ClientComponentProps) {
     const { filters, setFilters, where, fields, operators } =
-        useFiltersToPrismaWhere(["email", "name"]);
-    console.log("Filters:", filters);
-    console.log("Where clause:", where);
+        useRessourceFilter({
+            fieldMap: {
+                email: "string",
+                name: "string",
+            },
+        });
 
     const query = useQuery(
         orpc.user.list.queryOptions({
@@ -28,6 +31,7 @@ export function ClientComponent({}: ClientComponentProps) {
     return (
         <div className="container mx-auto p-4">
             <h1>Users {query.isLoading ? "Loading..." : ""} </h1>
+
             <div>
                 <ResourceFilter
                     fields={fields}

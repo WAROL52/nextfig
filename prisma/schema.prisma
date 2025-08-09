@@ -33,7 +33,6 @@ model User {
   image         String? 
   createdAt     DateTime
   updatedAt     DateTime
-
   firstName    String?
   lastName     String?
   website      String?

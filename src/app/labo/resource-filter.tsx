@@ -1,14 +1,27 @@
 // components/ResourceFilter.tsx
 "use client";
 
-import { UseListStateHandlers, useListState } from "@mantine/hooks";
+import {
+    UseListStateHandlers,
+    useDebouncedCallback,
+    useListState,
+} from "@mantine/hooks";
 import {
     DeleteIcon,
     FilterXIcon,
     ListFilterIcon,
     PlusIcon,
 } from "lucide-react";
-import { ParserBuilder, SetValues, Values } from "nuqs";
+import {
+    ParserBuilder,
+    SetValues,
+    Values,
+    parseAsArrayOf,
+    parseAsInteger,
+    useQueryState,
+} from "nuqs";
+
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,225 +42,7 @@ import {
 
 import { cn } from "@/lib/utils";
 
-import { Operator } from "./use-filters-to-prisma-where";
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
-
-// components/ResourceFilter.tsx
+import { Operator } from "./use-ressource-filter";
 
 // components/ResourceFilter.tsx
 
@@ -289,17 +84,26 @@ type FilterItem = {
     operator: Operator;
 };
 
-export function ResourceFilter({ fields, operators }: ResourceFilterProps) {
+export function ResourceFilter({
+    fields,
+    operators,
+    setFilters,
+    filters,
+}: ResourceFilterProps) {
     const allFilters: FilterItem[] = fields.flatMap((field) =>
         operators.map((operator) => ({
             field,
-            value: "",
+            value: filters[`${field}[${operator}]`] || "",
             show: true,
             operator,
         }))
     );
-    const [listRest, setListRest] = useListState<FilterItem>(allFilters);
-    const [listSearch, setListSearch] = useListState<FilterItem>([]);
+    const [listRest, setListRest] = useListState<FilterItem>(
+        allFilters.filter((i) => !i.value.length)
+    );
+    const [listSearch, setListSearch] = useListState<FilterItem>(
+        allFilters.filter((i) => i.value.length)
+    );
     const first = listRest[0] || null;
     const clearSearch = () => {
         setListSearch.setState([]);
@@ -316,7 +120,13 @@ export function ResourceFilter({ fields, operators }: ResourceFilterProps) {
     };
     const removeSearch = (item: FilterItem, index: number) => {
         setListSearch.remove(index);
-        setListRest.setState((current) => [...current, item]);
+        setListRest.setState((current) => [
+            ...current,
+            {
+                ...item,
+                value: "",
+            },
+        ]);
     };
     const listRestSorted = listRest.sort((a, b) => {
         const fieldA = a.field.toLowerCase() + a.operator.toLowerCase();
@@ -328,16 +138,47 @@ export function ResourceFilter({ fields, operators }: ResourceFilterProps) {
         const fieldB = b.field.toLowerCase() + b.operator.toLowerCase();
         return fieldA.localeCompare(fieldB);
     });
+    const handleValueChange = (item: FilterItem, value: string) => {
+        setFilters((cur) => {
+            return {
+                ...cur,
+                [`${item.field}[${item.operator}]`]: value,
+            };
+        });
+        setListSearch.setState((current) =>
+            current.map((item) => {
+                if (
+                    item.field === item.field &&
+                    item.operator === item.operator
+                ) {
+                    return { ...item, value };
+                }
+                return item;
+            })
+        );
+    };
+    const [list, setList] = useQueryState(
+        "listA",
+        parseAsArrayOf(parseAsInteger).withDefault([1, 2, 3])
+    );
     return (
         <div className="flex items-center justify-between space-x-2">
+            <Button
+                size="icon"
+                variant="outline"
+                onClick={() => {
+                    setList((current) => [...current, 1]);
+                }}
+            >
+                <PlusIcon />
+            </Button>
             <div>
-                {listRestSorted.map((item) => (
-                    <div key={item.field + item.operator}>
-                        {item.field} {item.operator}
-                    </div>
+                {list.map((item) => (
+                    <span key={item} className="text-sm">
+                        {item}
+                    </span>
                 ))}
             </div>
-            <pre>{JSON.stringify(first, null, 2)}</pre>
             <Popover open>
                 <PopoverTrigger>
                     <Button>
@@ -373,11 +214,17 @@ export function ResourceFilter({ fields, operators }: ResourceFilterProps) {
                                     listSearch={listSearchSorted}
                                     setListSearch={setListSearch}
                                     setListRest={setListRest}
+                                    onValueChange={(value) =>
+                                        handleValueChange(item, value)
+                                    }
                                 />
                                 <Button
                                     size={"icon"}
                                     variant={"ghost"}
-                                    onClick={() => removeSearch(item, index)}
+                                    onClick={() => {
+                                        handleValueChange(item, "");
+                                        removeSearch(item, index);
+                                    }}
                                 >
                                     <DeleteIcon />
                                 </Button>
@@ -386,16 +233,6 @@ export function ResourceFilter({ fields, operators }: ResourceFilterProps) {
                     </div>
                 </PopoverContent>
             </Popover>
-            <div>
-                selectedOperators
-                <div>
-                    {listSearchSorted.map((item) => (
-                        <div key={item.field + item.operator}>
-                            {item.field} {item.operator}
-                        </div>
-                    ))}
-                </div>
-            </div>
         </div>
     );
 }
@@ -405,10 +242,11 @@ type FilterFieldProps = {
     listRest: FilterItem[];
     listSearch: FilterItem[];
     setListSearch: UseListStateHandlers<FilterItem>;
+    onValueChange: (value: string) => void;
 };
 
 function FilterField(props: FilterFieldProps) {
-    const { item, listRest, setListRest, setListSearch } = props;
+    const { item, listRest, setListRest, setListSearch, onValueChange } = props;
     const fieldOptions: string[] = [];
     listRest.map((item) => {
         if (!fieldOptions.includes(item.field)) {
@@ -484,7 +322,12 @@ function FilterField(props: FilterFieldProps) {
                     ]);
                 }}
             />
-            <InputQuery field={item.field} operator={item.operator} />
+            <InputQuery
+                field={item.field}
+                operator={item.operator}
+                value={item.value}
+                onValueChange={onValueChange}
+            />
         </div>
     );
 }
@@ -577,10 +420,28 @@ function SelectOperator({
         </div>
     );
 }
-function InputQuery({ field }: { field: string; operator: Operator }) {
+function InputQuery({
+    field,
+    onValueChange,
+    value,
+}: {
+    field: string;
+    operator: Operator;
+    value: string;
+    onValueChange: (value: string) => void;
+}) {
+    const [inputValue, setInputValue] = useState(value);
+    const handleValueChange = useDebouncedCallback(onValueChange, 700);
     return (
         <div className="*:not-first:mt-2">
-            <Input placeholder={`Enter ${field}`} />
+            <Input
+                placeholder={`Enter ${field}`}
+                value={inputValue}
+                onChange={(e) => {
+                    setInputValue(e.target.value);
+                    handleValueChange(e.target.value);
+                }}
+            />
         </div>
     );
 }
