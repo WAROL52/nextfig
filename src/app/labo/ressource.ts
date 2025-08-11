@@ -15,6 +15,7 @@ const op = {
     contains: "contains",
     not: "not",
     notIn: "notIn",
+    mode: "mode",
 } as const;
 export const operatorType = [
     "string",
@@ -41,6 +42,7 @@ export const operatorMap: RessourceFilter.OperatorMap = {
         op.startsWith,
         op.endsWith,
         op.not,
+        op.mode,
     ],
     number: [op.equals, op.in, op.notIn, op.lt, op.lte, op.gt, op.gte, op.not],
     enum: [op.equals, op.in, op.notIn, op.not],

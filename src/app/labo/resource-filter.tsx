@@ -21,7 +21,7 @@ import {
     useQueryState,
 } from "nuqs";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,6 +43,36 @@ import {
 import { cn } from "@/lib/utils";
 
 import { Operator } from "./use-ressource-filter";
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
 
 // components/ResourceFilter.tsx
 
@@ -90,6 +120,7 @@ export function ResourceFilter({
     setFilters,
     filters,
 }: ResourceFilterProps) {
+    const [fieldState, setFieldState] = useState<string[]>(fields);
     const allFilters: FilterItem[] = fields.flatMap((field) =>
         operators.map((operator) => ({
             field,
@@ -104,6 +135,25 @@ export function ResourceFilter({
     const [listSearch, setListSearch] = useListState<FilterItem>(
         allFilters.filter((i) => i.value.length)
     );
+    useEffect(() => {
+        if (
+            fieldState.every((field) => fields.includes(field)) &&
+            fieldState.length === fields.length
+        ) {
+            return;
+        }
+        setFieldState(fields);
+        setListRest.setState(allFilters.filter((i) => !i.value.length));
+        setListSearch.setState(allFilters.filter((i) => i.value.length));
+    }, [
+        allFilters,
+        fields,
+        operators,
+        filters,
+        fieldState,
+        setListRest,
+        setListSearch,
+    ]);
     const first = listRest[0] || null;
     const clearSearch = () => {
         setListSearch.setState([]);
@@ -180,7 +230,7 @@ export function ResourceFilter({
                 ))}
             </div>
             <Popover open>
-                <PopoverTrigger>
+                <PopoverTrigger asChild>
                     <Button>
                         <ListFilterIcon />
                     </Button>
@@ -424,6 +474,7 @@ function InputQuery({
     field,
     onValueChange,
     value,
+    operator,
 }: {
     field: string;
     operator: Operator;
@@ -432,16 +483,55 @@ function InputQuery({
 }) {
     const [inputValue, setInputValue] = useState(value);
     const handleValueChange = useDebouncedCallback(onValueChange, 700);
+    if (operator === "mode") {
+        return (
+            <div className="flex items-center space-x-2">
+                <SelectMode
+                    value={inputValue}
+                    onChange={(value) => {
+                        setInputValue(value);
+                        handleValueChange(value);
+                    }}
+                />
+            </div>
+        );
+    }
     return (
         <div className="*:not-first:mt-2">
             <Input
                 placeholder={`Enter ${field}`}
                 value={inputValue}
+                disabled={!field}
                 onChange={(e) => {
                     setInputValue(e.target.value);
                     handleValueChange(e.target.value);
                 }}
             />
         </div>
+    );
+}
+function SelectMode({
+    value,
+    onChange,
+}: {
+    value: string;
+    onChange: (value: string) => void;
+}) {
+    return (
+        <Select value={value} onValueChange={onChange}>
+            <SelectTrigger className="w-full bg-blue-400/10">
+                <SelectValue placeholder="Select mode" />
+            </SelectTrigger>
+            <SelectContent>
+                <SelectGroup>
+                    <SelectItem value="default" className="truncate">
+                        Default
+                    </SelectItem>
+                    <SelectItem value="insensitive" className="truncate">
+                        Insensitive
+                    </SelectItem>
+                </SelectGroup>
+            </SelectContent>
+        </Select>
     );
 }

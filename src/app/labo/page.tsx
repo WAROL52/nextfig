@@ -3,6 +3,7 @@ import { HydrateClient, getQueryClient } from "@/lib/query/hydration";
 
 import { ClientComponent } from "./client-component";
 import { buildPrismaWhere } from "./ressource";
+import { RessourceProvider } from "./ressource-store";
 
 type PageProps = {
     searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -10,7 +11,10 @@ type PageProps = {
 
 export default async function Page({ searchParams }: PageProps) {
     const params = await searchParams;
-    const where = buildPrismaWhere(params);
+    const where = buildPrismaWhere(params, {
+        email: "string",
+        name: "string",
+    });
     const queryClient = getQueryClient();
 
     console.log("Search Params:", params);
@@ -26,9 +30,11 @@ export default async function Page({ searchParams }: PageProps) {
 
     return (
         <div>
-            <HydrateClient client={queryClient}>
-                <ClientComponent />
-            </HydrateClient>
+            <RessourceProvider>
+                <HydrateClient client={queryClient}>
+                    <ClientComponent />
+                </HydrateClient>
+            </RessourceProvider>
         </div>
     );
 }

@@ -72,6 +72,8 @@ export function useRessourceFilter({
     ...options
 }: UseRessourceFilterProps) {
     const fields: string[] = Object.keys(fieldMap);
+    console.log("Using fields:", fields);
+
     // Build query keys dynamically based on fields and operators
     const querySchema = useMemo(() => {
         const schema: Record<

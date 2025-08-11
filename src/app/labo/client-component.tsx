@@ -5,18 +5,21 @@ import { useQuery } from "@tanstack/react-query";
 import { orpc } from "@/lib/orpc";
 
 import { ResourceFilter } from "./resource-filter";
-import { useRessourceFilter } from "./use-ressource-filter";
+import { RessourceFilter } from "./ressource";
+import {
+    useRessourceFilterContext,
+    useRessourceFilterWhereClause,
+} from "./ressource-store";
 
 export type ClientComponentProps = {};
 
 export function ClientComponent({}: ClientComponentProps) {
-    const { filters, setFilters, where, fields, operators } =
-        useRessourceFilter({
-            fieldMap: {
-                email: "string",
-                name: "string",
-            },
-        });
+    const fieldMap: RessourceFilter.FieldMap = {
+        email: "string",
+        name: "string",
+    };
+    const { where: where } = useRessourceFilterWhereClause(fieldMap);
+    console.log("Filter Where Clause:", where);
 
     const query = useQuery(
         orpc.user.list.queryOptions({
@@ -33,12 +36,7 @@ export function ClientComponent({}: ClientComponentProps) {
             <h1>Users {query.isLoading ? "Loading..." : ""} </h1>
 
             <div>
-                <ResourceFilter
-                    fields={fields}
-                    filters={filters}
-                    setFilters={setFilters}
-                    operators={operators}
-                />
+                <ResourceFilterController fieldMap={fieldMap} />
             </div>
             <ul>
                 {query.data?.map((user) => (
@@ -49,4 +47,14 @@ export function ClientComponent({}: ClientComponentProps) {
             </ul>
         </div>
     );
+}
+
+function ResourceFilterController({
+    fieldMap,
+}: {
+    fieldMap: RessourceFilter.FieldMap;
+}) {
+    const ressourceFilter = useRessourceFilterContext({ fieldMap });
+
+    return <ResourceFilter {...ressourceFilter} />;
 }
