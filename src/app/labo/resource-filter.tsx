@@ -84,6 +84,18 @@ import { Operator } from "./use-ressource-filter";
 
 // components/ResourceFilter.tsx
 
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
+// components/ResourceFilter.tsx
+
 type Field = string;
 interface ResourceFilterProps {
     fields: Field[];
@@ -156,8 +168,23 @@ export function ResourceFilter({
     ]);
     const first = listRest[0] || null;
     const clearSearch = () => {
+        setFilters(() =>
+            listSearch.reduce(
+                (acc, item) => {
+                    acc[`${item.field}[${item.operator}]`] = "";
+                    return acc;
+                },
+                {} as Record<string, string>
+            )
+        );
+        setListRest.setState(
+            allFilters.map((item) => ({
+                ...item,
+                value: listSearch.includes(item) ? "" : item.value,
+                show: true,
+            }))
+        );
         setListSearch.setState([]);
-        setListRest.setState(allFilters);
     };
     const addFirst = () => {
         if (first) {
@@ -245,6 +272,7 @@ export function ResourceFilter({
                             size={"icon"}
                             variant={"outline"}
                             onClick={clearSearch}
+                            disabled={!listSearch.length}
                         >
                             <FilterXIcon />
                         </Button>
