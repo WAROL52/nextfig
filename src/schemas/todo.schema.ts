@@ -1,4 +1,12 @@
+import { os } from "@orpc/server";
 import z from "zod";
+
+import prisma from "@/lib/prisma";
+import {
+    createCollectionRouter,
+    createCollectionSchema,
+    createCollectionSchema2,
+} from "@/lib/router-collection";
 
 import {
     TodoCreateInputSchema,
@@ -22,3 +30,66 @@ export namespace TodoSchemaType {
     export type Update = z.infer<typeof todoSchema.update>;
     export type Delete = z.infer<typeof todoSchema.delete>;
 }
+const schema2 = createCollectionSchema2(
+    TodoSchema,
+    TodoCreateInputSchema,
+    TodoSchema.shape.id
+);
+
+const tdSchema = createCollectionSchema({
+    one: TodoSchema,
+    many: z.array(TodoSchema),
+    createArg: TodoCreateInputSchema,
+    updateArg: TodoSchema.pick({ id: true }).merge(
+        z.object({
+            data: TodoSchema.partial(),
+        })
+    ),
+    deleteArg: TodoSchema.pick({ id: true }),
+    findManyArg: TodoSchema,
+    findOneArg: TodoSchema.pick({ id: true }),
+});
+
+export namespace TodoSchemaType2 {
+    export type One = z.infer<typeof schema2.one>;
+    export type Many = z.infer<typeof schema2.many>;
+    export type Create = z.infer<typeof schema2.createArg>;
+    export type Update = z.infer<typeof schema2.updateArg>;
+    export type Delete = z.infer<typeof schema2.deleteArg>;
+}
+
+const router = createCollectionRouter(
+    {
+        schema: tdSchema,
+        os: os,
+    },
+    ({ os }) => ({
+        create: os.create.handler(async ({ input }) => {
+            return prisma.todo.create({ data: input });
+        }),
+        update: os.update.handler(async ({ input }) => {
+            return prisma.todo.update({
+                where: { id: input.id },
+                data: input.data,
+            });
+        }),
+        delete: os.delete.handler(async ({ input }) => {
+            return prisma.todo.delete({ where: input });
+        }),
+        findMany: os.findMany.handler(async ({ input }) => {
+            return prisma.todo.findMany({
+                where: input,
+            });
+        }),
+        findOne: os.findOne.handler(async ({ input }) => {
+            return prisma.todo.findUnique({
+                where: {
+                    id: input.id,
+                },
+            });
+        }),
+    })
+);
+const users = await prisma.user.count({
+    select: true,
+});
