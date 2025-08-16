@@ -52,11 +52,28 @@ const tdSchema = createCollectionSchema({
 
 export namespace TodoSchemaType2 {
     export type One = z.infer<typeof schema2.one>;
-    export type Many = z.infer<typeof schema2.many>;
-    export type Create = z.infer<typeof schema2.createArg>;
-    export type Update = z.infer<typeof schema2.updateArg>;
-    export type Delete = z.infer<typeof schema2.deleteArg>;
+    export type CreateArg = z.infer<typeof schema2.createArg>;
+    export type CreateResult = z.infer<typeof schema2.createResult>;
+    export type UpdateArg = z.infer<typeof schema2.updateArg>;
+    export type UpdateResult = z.infer<typeof schema2.updateResult>;
+    export type DeleteArg = z.infer<typeof schema2.deleteArg>;
+    export type DeleteResult = z.infer<typeof schema2.deleteResult>;
+    export type FindManyArg = z.infer<typeof schema2.findManyArg>;
+    export type FindManyResult = z.infer<typeof schema2.findManyResult>;
+    export type FindOneArg = z.infer<typeof schema2.findOneArg>;
+    export type FindOneResult = z.infer<typeof schema2.findOneResult>;
 }
+const FindManyArg: TodoSchemaType2.FindManyArg = {
+    orderBy: {
+        field: "status",
+        direction: "asc",
+    },
+    where: {
+        title: {
+            isEmpty: "true",
+        },
+    },
+};
 
 const router = createCollectionRouter(
     {
@@ -90,6 +107,6 @@ const router = createCollectionRouter(
         }),
     })
 );
-const users = await prisma.user.count({
-    select: true,
+const users = await prisma.user.delete({
+    where: { email: "user@example.com" },
 });
