@@ -19,7 +19,8 @@ const op = {
     notIn: "notIn",
     mode: "mode",
 } as const;
-
+const opKeys = Object.keys(op) as (keyof typeof op)[];
+const opKeysSchema = z.enum(opKeys as [keyof typeof op & string]);
 const opSchema = {
     [op.equals]: z.literal("equals"),
     [op.gt]: z.literal("gt"),
@@ -152,45 +153,39 @@ const operatorMapShape = {
 export const operatorMapSchema: z.ZodType<OperatorMapType> =
     z.object(operatorMapShape);
 export type CollectionSchema<
-    TOne,
-    TFindMany,
-    TFindOne,
-    TCreate,
-    TUpdate,
-    TDelete,
-> = {
-    one: z.ZodType<TOne>;
-    many: z.ZodArray<z.ZodType<TOne>>;
-    createArg: z.ZodType<TCreate>;
-    updateArg: z.ZodType<TUpdate>;
-    deleteArg: z.ZodType<TDelete>;
-    findManyArg: z.ZodType<TFindMany>;
-    findOneArg: z.ZodType<TFindOne>;
-};
+    T extends Record<string, any>,
+    ID extends z.ZodType<any>,
+    C extends z.ZodType<any>,
+    U extends z.ZodType<any>,
+> = ReturnType<typeof createCollectionSchema<T, ID, C, U>>;
 
 export type CollectionSchemaAny = CollectionSchema<
-    any,
-    any,
-    any,
-    any,
-    any,
-    any
+    Record<string, any>,
+    z.ZodType<any>,
+    z.ZodType<any>,
+    z.ZodType<any>
 >;
-export function createCollectionSchema2<
-    T extends z.ZodRawShape,
-    C extends z.ZodType,
-    TId extends z.ZodType,
-    UnknownKeys extends z.UnknownKeysParam = z.UnknownKeysParam,
-    Catchall extends z.ZodTypeAny = z.ZodTypeAny,
->(
-    schema: z.ZodObject<T, UnknownKeys, Catchall>,
-    createSchema: C,
-    idSchema: TId
-) {
-    const idArg = z.object({
-        id: idSchema,
-    });
-    const fields = Object.keys(schema.shape) as [keyof T & string];
+export type createCollectionSchemaOptions<
+    T extends Record<string, any>,
+    ID extends z.ZodType<any>,
+    C extends z.ZodType<any>,
+    U extends z.ZodType<any>,
+> = {
+    schema: z.ZodObject<T>;
+    createSchema: C;
+    updateSchema: U;
+    idSChema: ID;
+};
+export function createCollectionSchema<
+    T extends Record<string, any>,
+    ID extends z.ZodType<any>,
+    C extends z.ZodType<any>,
+    U extends z.ZodType<any>,
+>(options: createCollectionSchemaOptions<T, ID, C, U>) {
+    const { schema, createSchema, updateSchema, idSChema } = options;
+    // const idArg = schema.pick({ [idName]: true } as const);
+
+    const fields = Object.keys(schema.shape) as [keyof T];
     const errorSchema = z.object({
         message: z.string(),
         details: z.array(z.string()).optional(),
@@ -198,108 +193,66 @@ export function createCollectionSchema2<
     });
     const schemaWithError = schema.or(errorSchema);
 
+    const whereSchema = z.record(
+        z.enum(fields as [keyof T & string]),
+        z.record(
+            opKeysSchema,
+            z.union([
+                z.string(),
+                z.number(),
+                z.boolean(),
+                z.date(),
+                z.array(z.any()),
+            ])
+        )
+    );
+    const countSchema = z.record(
+        z.enum(fields as [keyof T & string]),
+        z.literal(true)
+    );
+    const countResultSchema = z
+        .record(z.enum(fields as [keyof T & string]), z.number())
+        .and(
+            z.object({
+                _all: z.number(),
+            })
+        );
     return {
         one: schema,
         createArg: createSchema,
         createResult: schemaWithError,
-        updateArg: z.object({
-            id: idSchema,
-            data: schema.partial() as z.ZodObject<
-                {
-                    [k in keyof T]: z.ZodOptional<T[k]>;
-                },
-                UnknownKeys,
-                Catchall
-            >,
-        }),
+        updateArg: z
+            .object({
+                data: updateSchema,
+            })
+            .and(idSChema),
         updateResult: schemaWithError,
-        deleteArg: idArg,
+        deleteArg: idSChema,
         deleteResult: schemaWithError,
         findManyArg: z.object({
-            where: z
-                .object(
-                    Object.fromEntries(
-                        fields.map((field) => {
-                            let type: (typeof operatorType)[number] = "string";
-                            if (schema.shape[field] instanceof z.ZodString) {
-                                type = "string";
-                            } else if (
-                                schema.shape[field] instanceof z.ZodNumber
-                            ) {
-                                type = "number";
-                            } else if (
-                                schema.shape[field] instanceof z.ZodBoolean
-                            ) {
-                                type = "boolean";
-                            } else if (
-                                schema.shape[field] instanceof z.ZodDate
-                            ) {
-                                type = "date";
-                            } else if (
-                                schema.shape[field] instanceof z.ZodEnum
-                            ) {
-                                type = "enum";
-                            } else if (
-                                schema.shape[field] instanceof z.ZodArray ||
-                                schema.shape[field] instanceof z.ZodSet
-                            ) {
-                                type = "list";
-                            } else if (
-                                schema.shape[field] instanceof z.ZodObject ||
-                                schema.shape[field] instanceof z.ZodRecord
-                            ) {
-                                type = "json";
-                            }
-                            const typeSchema = operatorMapShape[type];
-                            return [
-                                field as keyof T,
-                                z.record(typeSchema, z.string()),
-                            ];
-                        })
-                    )
+            where: whereSchema.optional(),
+            orderBy: z
+                .record(
+                    z.enum(fields as [keyof T & string]),
+                    z.enum(["asc", "desc"])
                 )
                 .optional(),
-            orderBy: z.object({
-                field: z.enum(fields),
-                direction: z.enum(["asc", "desc"]),
-            }),
             page: z.number().optional(),
             pageSize: z.number().optional(),
+            count: countSchema.optional(),
         }),
         findManyResult: z.object({
             items: z.array(schema),
-            totalCount: z.number(),
             page: z.number(),
             pageSize: z.number(),
+            count: countResultSchema,
         }),
-        findOneArg: idArg,
+        findOneArg: idSChema,
         findOneResult: schemaWithError.or(z.null()),
     };
 }
-export function createCollectionSchema<
-    TOne,
-    TFindMany,
-    TFindOne,
-    TCreate,
-    TUpdate,
-    TDelete,
->(
-    schema: CollectionSchema<
-        TOne,
-        TFindMany,
-        TFindOne,
-        TCreate,
-        TUpdate,
-        TDelete
-    >
-) {
-    return schema;
-}
 type OsBuilder = typeof os;
-export type CollectionRouterOptions<
-    TSchema extends CollectionSchemaAny,
-    Os extends OsBuilder,
-> = {
+export type CollectionRouterOptions<TSchema, Os extends OsBuilder> = {
     schema: TSchema;
     os: Os;
 };
@@ -316,82 +269,50 @@ export type CollectionRouter<
     create: ProcedureHandlerType<Os, TSchema["createArg"], TSchema["one"]>;
     update: ProcedureHandlerType<Os, TSchema["updateArg"], TSchema["one"]>;
     delete: ProcedureHandlerType<Os, TSchema["deleteArg"], TSchema["one"]>;
-    findMany: ProcedureHandlerType<Os, TSchema["findManyArg"], TSchema["many"]>;
+    findMany: ProcedureHandlerType<
+        Os,
+        TSchema["findManyArg"],
+        TSchema["findManyResult"]
+    >;
     findOne: ProcedureHandlerType<Os, TSchema["findOneArg"], TSchema["one"]>;
 };
 function createProcedureBuilderWithInputOutput<
-    TOne,
-    TFindMany,
-    TFindOne,
-    TCreate,
-    TUpdate,
-    TDelete,
+    T extends Record<string, any>,
+    ID extends z.ZodType<any>,
+    C extends z.ZodType<any>,
+    U extends z.ZodType<any>,
     Os extends OsBuilder,
->(
-    schema: CollectionSchema<
-        TOne,
-        TFindMany,
-        TFindOne,
-        TCreate,
-        TUpdate,
-        TDelete
-    >,
-    os: Os
-) {
+>(schema: CollectionSchema<T, ID, C, U>, os: Os) {
     return {
-        create: os.input(schema.createArg).output(schema.one),
-        update: os.input(schema.updateArg).output(schema.one),
-        delete: os.input(schema.deleteArg).output(schema.one),
-        findMany: os.input(schema.findManyArg).output(schema.many),
-        findOne: os.input(schema.findOneArg).output(schema.one.or(z.null())),
+        create: os.input(schema.createArg).output(schema.createResult),
+        update: os.input(schema.updateArg).output(schema.updateResult),
+        findOne: os.input(schema.findOneArg).output(schema.findOneResult),
+        findMany: os.input(schema.findManyArg).output(schema.findManyResult),
+        delete: os.input(schema.deleteArg).output(schema.deleteResult),
     };
 }
+
 type CreateProcedureBuilderWithInputOutput<
-    TOne,
-    TFindMany,
-    TFindOne,
-    TCreate,
-    TUpdate,
-    TDelete,
+    T extends Record<string, any>,
+    ID extends z.ZodType<any>,
+    C extends z.ZodType<any>,
+    U extends z.ZodType<any>,
     Os extends OsBuilder,
-> = ReturnType<
-    typeof createProcedureBuilderWithInputOutput<
-        TOne,
-        TFindMany,
-        TFindOne,
-        TCreate,
-        TUpdate,
-        TDelete,
-        Os
-    >
->;
+> = ReturnType<typeof createProcedureBuilderWithInputOutput<T, ID, C, U, Os>>;
 
 export function createCollectionRouter<
-    TOne,
-    TFindMany,
-    TFindOne,
-    TCreate,
-    TUpdate,
-    TDelete,
+    T extends Record<string, any>,
+    ID extends z.ZodType<any>,
+    C extends z.ZodType<any>,
+    U extends z.ZodType<any>,
     Os extends OsBuilder,
-    T,
+    R,
 >(
-    options: CollectionRouterOptions<
-        CollectionSchema<TOne, TFindMany, TFindOne, TCreate, TUpdate, TDelete>,
-        Os
-    >,
+    options: CollectionRouterOptions<CollectionSchema<T, ID, C, U>, Os>,
     router: (option: {
-        os: CreateProcedureBuilderWithInputOutput<
-            TOne,
-            TFindMany,
-            TFindOne,
-            TCreate,
-            TUpdate,
-            TDelete,
-            Os
-        >;
-    }) => T
-): T {
+        os: CreateProcedureBuilderWithInputOutput<T, ID, C, U, Os>;
+    }) => R
+): R {
     const { schema, os } = options;
     return router({ os: createProcedureBuilderWithInputOutput(schema, os) });
 }

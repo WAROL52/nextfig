@@ -5,7 +5,6 @@ import prisma from "@/lib/prisma";
 import {
     createCollectionRouter,
     createCollectionSchema,
-    createCollectionSchema2,
 } from "@/lib/router-collection";
 
 import {
@@ -30,47 +29,35 @@ export namespace TodoSchemaType {
     export type Update = z.infer<typeof todoSchema.update>;
     export type Delete = z.infer<typeof todoSchema.delete>;
 }
-const schema2 = createCollectionSchema2(
-    TodoSchema,
-    TodoCreateInputSchema,
-    TodoSchema.shape.id
-);
-
 const tdSchema = createCollectionSchema({
-    one: TodoSchema,
-    many: z.array(TodoSchema),
-    createArg: TodoCreateInputSchema,
-    updateArg: TodoSchema.pick({ id: true }).merge(
-        z.object({
-            data: TodoSchema.partial(),
-        })
-    ),
-    deleteArg: TodoSchema.pick({ id: true }),
-    findManyArg: TodoSchema,
-    findOneArg: TodoSchema.pick({ id: true }),
+    schema: TodoSchema,
+    createSchema: TodoCreateInputSchema,
+    updateSchema: TodoUpdateInputSchema,
+    idSChema: TodoSchema.pick({ id: true }),
 });
 
 export namespace TodoSchemaType2 {
-    export type One = z.infer<typeof schema2.one>;
-    export type CreateArg = z.infer<typeof schema2.createArg>;
-    export type CreateResult = z.infer<typeof schema2.createResult>;
-    export type UpdateArg = z.infer<typeof schema2.updateArg>;
-    export type UpdateResult = z.infer<typeof schema2.updateResult>;
-    export type DeleteArg = z.infer<typeof schema2.deleteArg>;
-    export type DeleteResult = z.infer<typeof schema2.deleteResult>;
-    export type FindManyArg = z.infer<typeof schema2.findManyArg>;
-    export type FindManyResult = z.infer<typeof schema2.findManyResult>;
-    export type FindOneArg = z.infer<typeof schema2.findOneArg>;
-    export type FindOneResult = z.infer<typeof schema2.findOneResult>;
+    export type One = z.infer<typeof tdSchema.one>;
+    export type CreateArg = z.infer<typeof tdSchema.createArg>;
+    export type CreateResult = z.infer<typeof tdSchema.createResult>;
+    export type UpdateArg = z.infer<typeof tdSchema.updateArg>;
+    export type UpdateResult = z.infer<typeof tdSchema.updateResult>;
+    export type DeleteArg = z.infer<typeof tdSchema.deleteArg>;
+    export type DeleteResult = z.infer<typeof tdSchema.deleteResult>;
+
+    export type FindManyArg = z.infer<typeof tdSchema.findManyArg>;
+
+    export type FindManyResult = z.infer<typeof tdSchema.findManyResult>;
+    export type FindOneArg = z.infer<typeof tdSchema.findOneArg>;
+    export type FindOneResult = z.infer<typeof tdSchema.findOneResult>;
 }
 const FindManyArg: TodoSchemaType2.FindManyArg = {
     orderBy: {
-        field: "status",
-        direction: "asc",
+        updatedAt: "asc",
     },
     where: {
         title: {
-            isEmpty: "true",
+            contains: "example",
         },
     },
 };
@@ -81,24 +68,45 @@ const router = createCollectionRouter(
         os: os,
     },
     ({ os }) => ({
-        create: os.create.handler(async ({ input }) => {
-            return prisma.todo.create({ data: input });
+        create: os.create.handler(({ input }) => {
+            return prisma.todo.create({
+                data: input,
+            });
         }),
-        update: os.update.handler(async ({ input }) => {
+        update: os.update.handler(({ input }) => {
             return prisma.todo.update({
                 where: { id: input.id },
                 data: input.data,
             });
         }),
-        delete: os.delete.handler(async ({ input }) => {
+        delete: os.delete.handler(({ input }) => {
             return prisma.todo.delete({ where: input });
         }),
         findMany: os.findMany.handler(async ({ input }) => {
-            return prisma.todo.findMany({
-                where: input,
+            let skip = 0;
+            if (input.page && input.pageSize) {
+                skip = (input.page - 1) * input.pageSize;
+            }
+            const todos = await prisma.todo.findMany({
+                where: input.where,
+                orderBy: input.orderBy,
+                take: input.pageSize,
+                skip,
             });
+            const totalCount = await prisma.todo.count({
+                select: {
+                    ...input.count,
+                    _all: true,
+                },
+            });
+            return {
+                items: todos,
+                page: input.page ?? 1,
+                pageSize: input.pageSize ?? todos.length,
+                count: totalCount,
+            };
         }),
-        findOne: os.findOne.handler(async ({ input }) => {
+        findOne: os.findOne.handler(({ input }) => {
             return prisma.todo.findUnique({
                 where: {
                     id: input.id,
