@@ -1,6 +1,8 @@
 import { ErrorMap, ProcedureHandler, os } from "@orpc/server";
 import z from "zod";
 
+import { Prisma, PrismaClient } from "@/generated/prisma";
+
 const op = {
     equals: "equals",
     gt: "gt",
@@ -157,10 +159,12 @@ export type CollectionSchema<
     ID extends z.ZodType<any>,
     C extends z.ZodType<any>,
     U extends z.ZodType<any>,
-> = ReturnType<typeof createCollectionSchema<T, ID, C, U>>;
+    W extends z.ZodType<any>,
+> = ReturnType<typeof createCollectionSchema<T, ID, C, U, W>>;
 
 export type CollectionSchemaAny = CollectionSchema<
     Record<string, any>,
+    z.ZodType<any>,
     z.ZodType<any>,
     z.ZodType<any>,
     z.ZodType<any>
@@ -170,19 +174,23 @@ export type createCollectionSchemaOptions<
     ID extends z.ZodType<any>,
     C extends z.ZodType<any>,
     U extends z.ZodType<any>,
+    W extends z.ZodType<any>,
 > = {
     schema: z.ZodObject<T>;
     createSchema: C;
     updateSchema: U;
     idSChema: ID;
+    whereSchema: W;
 };
 export function createCollectionSchema<
     T extends Record<string, any>,
     ID extends z.ZodType<any>,
     C extends z.ZodType<any>,
     U extends z.ZodType<any>,
->(options: createCollectionSchemaOptions<T, ID, C, U>) {
-    const { schema, createSchema, updateSchema, idSChema } = options;
+    W extends z.ZodType<any>,
+>(options: createCollectionSchemaOptions<T, ID, C, U, W>) {
+    const { schema, createSchema, updateSchema, idSChema, whereSchema } =
+        options;
     // const idArg = schema.pick({ [idName]: true } as const);
 
     const fields = Object.keys(schema.shape) as [keyof T];
@@ -193,19 +201,6 @@ export function createCollectionSchema<
     });
     const schemaWithError = schema.or(errorSchema);
 
-    const whereSchema = z.record(
-        z.enum(fields as [keyof T & string]),
-        z.record(
-            opKeysSchema,
-            z.union([
-                z.string(),
-                z.number(),
-                z.boolean(),
-                z.date(),
-                z.array(z.any()),
-            ])
-        )
-    );
     const countSchema = z.record(
         z.enum(fields as [keyof T & string]),
         z.literal(true)
@@ -219,6 +214,11 @@ export function createCollectionSchema<
         );
     return {
         one: schema,
+        schema,
+        createSchema,
+        updateSchema,
+        idSChema,
+        whereSchema,
         createArg: createSchema,
         createResult: schemaWithError,
         updateArg: z
@@ -281,8 +281,9 @@ function createProcedureBuilderWithInputOutput<
     ID extends z.ZodType<any>,
     C extends z.ZodType<any>,
     U extends z.ZodType<any>,
+    W extends z.ZodType<any>,
     Os extends OsBuilder,
->(schema: CollectionSchema<T, ID, C, U>, os: Os) {
+>(schema: CollectionSchema<T, ID, C, U, W>, os: Os) {
     return {
         create: os.input(schema.createArg).output(schema.createResult),
         update: os.input(schema.updateArg).output(schema.updateResult),
@@ -297,20 +298,227 @@ type CreateProcedureBuilderWithInputOutput<
     ID extends z.ZodType<any>,
     C extends z.ZodType<any>,
     U extends z.ZodType<any>,
+    W extends z.ZodType<any>,
     Os extends OsBuilder,
-> = ReturnType<typeof createProcedureBuilderWithInputOutput<T, ID, C, U, Os>>;
+> = ReturnType<
+    typeof createProcedureBuilderWithInputOutput<T, ID, C, U, W, Os>
+>;
+export function createPrismaRouterHandler<
+    T extends Record<string, any>,
+    ID extends z.ZodType<any>,
+    C extends z.ZodType<any>,
+    U extends z.ZodType<any>,
+    W extends z.ZodType<any>,
+    ModelName extends Prisma.ModelName,
+>(
+    collectionSchema: CollectionSchema<T, ID, C, U, W>,
+    prisma: PrismaClient,
+    modelName: Uncapitalize<ModelName>
+) {
+    return {
+        create: createHandlerCreate<T, ID, C, U, W, ModelName>(
+            collectionSchema,
+            prisma,
+            modelName
+        ),
+        update: createHandlerUpdate<T, ID, C, U, W, ModelName>(
+            collectionSchema,
+            prisma,
+            modelName
+        ),
+        delete: createHandlerDelete<T, ID, C, U, W, ModelName>(
+            collectionSchema,
+            prisma,
+            modelName
+        ),
+        findMany: createHandlerFindMany<T, ID, C, U, W, ModelName>(
+            collectionSchema,
+            prisma,
+            modelName
+        ),
+        findOne: createHandlerFindOne<T, ID, C, U, W, ModelName>(
+            collectionSchema,
+            prisma,
+            modelName
+        ),
+    };
+}
+export function createHandlerCreate<
+    T extends Record<string, any>,
+    ID extends z.ZodType<any>,
+    C extends z.ZodType<any>,
+    U extends z.ZodType<any>,
+    W extends z.ZodType<any>,
+    ModelName extends Prisma.ModelName,
+>(
+    collectionSchema: CollectionSchema<T, ID, C, U, W>,
+    prisma: PrismaClient,
+    modelName: Uncapitalize<ModelName>
+) {
+    type Model = Prisma.TypeMap["model"][ModelName];
+    const model = prisma[modelName];
+    if (!model) {
+        throw new Error(`Model ${modelName} not found in PrismaClient`);
+    }
+    return function handlerCreate({
+        input,
+    }: {
+        input: z.infer<typeof collectionSchema.createArg>;
+    }) {
+        const data = input as Model["operations"]["create"]["args"]["data"];
+        // @ts-ignore
+        return model.create({
+            data,
+        }) as Promise<z.infer<typeof collectionSchema.createResult>>;
+    };
+}
+
+export function createHandlerUpdate<
+    T extends Record<string, any>,
+    ID extends z.ZodType<any>,
+    C extends z.ZodType<any>,
+    U extends z.ZodType<any>,
+    W extends z.ZodType<any>,
+    ModelName extends Prisma.ModelName,
+>(
+    collectionSchema: CollectionSchema<T, ID, C, U, W>,
+    prisma: PrismaClient,
+    modelName: Uncapitalize<ModelName>
+) {
+    type Model = Prisma.TypeMap["model"][ModelName];
+    const model = prisma[modelName];
+    if (!model) {
+        throw new Error(`Model ${modelName} not found in PrismaClient`);
+    }
+    return function handlerUpdate({
+        input,
+    }: {
+        input: z.infer<typeof collectionSchema.updateArg>;
+    }) {
+        const data = input as Model["operations"]["update"]["args"]["data"];
+        // @ts-ignore
+        return model.update({
+            data,
+        }) as Promise<z.infer<typeof collectionSchema.updateResult>>;
+    };
+}
+
+export function createHandlerDelete<
+    T extends Record<string, any>,
+    ID extends z.ZodType<any>,
+    C extends z.ZodType<any>,
+    U extends z.ZodType<any>,
+    W extends z.ZodType<any>,
+    ModelName extends Prisma.ModelName,
+>(
+    collectionSchema: CollectionSchema<T, ID, C, U, W>,
+    prisma: PrismaClient,
+    modelName: Uncapitalize<ModelName>
+) {
+    const model = prisma[modelName];
+    if (!model) {
+        throw new Error(`Model ${modelName} not found in PrismaClient`);
+    }
+    return function handlerDelete({
+        input,
+    }: {
+        input: z.infer<typeof collectionSchema.deleteArg>;
+    }) {
+        // @ts-ignore
+        return model.delete({
+            where: input,
+        }) as Promise<z.infer<typeof collectionSchema.deleteResult>>;
+    };
+}
+
+export function createHandlerFindMany<
+    T extends Record<string, any>,
+    ID extends z.ZodType<any>,
+    C extends z.ZodType<any>,
+    U extends z.ZodType<any>,
+    W extends z.ZodType<any>,
+    ModelName extends Prisma.ModelName,
+>(
+    collectionSchema: CollectionSchema<T, ID, C, U, W>,
+    prisma: PrismaClient,
+    modelName: Uncapitalize<ModelName>
+) {
+    const model = prisma[modelName];
+    if (!model) {
+        throw new Error(`Model ${modelName} not found in PrismaClient`);
+    }
+    return async function handlerFindMany({
+        input,
+    }: {
+        input: z.infer<typeof collectionSchema.findManyArg>;
+    }) {
+        const { where, orderBy, pageSize, page } = input;
+        let skip = 0;
+        if (page && pageSize) {
+            skip = (page - 1) * pageSize;
+        }
+        // @ts-ignore
+        const items = (await model.findMany({
+            where,
+            orderBy,
+            take: pageSize,
+            skip,
+        })) as z.infer<typeof collectionSchema.findManyResult>["items"];
+
+        // @ts-ignore
+        const count = (await model.count({
+            where,
+        })) as z.infer<typeof collectionSchema.findManyResult>["count"];
+
+        return {
+            items,
+            page: page || 1,
+            pageSize: pageSize || items.length,
+            count,
+        };
+    };
+}
+
+export function createHandlerFindOne<
+    T extends Record<string, any>,
+    ID extends z.ZodType<any>,
+    C extends z.ZodType<any>,
+    U extends z.ZodType<any>,
+    W extends z.ZodType<any>,
+    ModelName extends Prisma.ModelName,
+>(
+    collectionSchema: CollectionSchema<T, ID, C, U, W>,
+    prisma: PrismaClient,
+    modelName: Uncapitalize<ModelName>
+) {
+    const model = prisma[modelName];
+    if (!model) {
+        throw new Error(`Model ${modelName} not found in PrismaClient`);
+    }
+    return async function handlerFindOne({
+        input,
+    }: {
+        input: z.infer<typeof collectionSchema.findOneArg>;
+    }) {
+        // @ts-ignore
+        return (await model.findUnique({
+            where: input,
+        })) as z.infer<typeof collectionSchema.findOneResult>;
+    };
+}
 
 export function createCollectionRouter<
     T extends Record<string, any>,
     ID extends z.ZodType<any>,
     C extends z.ZodType<any>,
     U extends z.ZodType<any>,
+    W extends z.ZodType<any>,
     Os extends OsBuilder,
     R,
 >(
-    options: CollectionRouterOptions<CollectionSchema<T, ID, C, U>, Os>,
+    options: CollectionRouterOptions<CollectionSchema<T, ID, C, U, W>, Os>,
     router: (option: {
-        os: CreateProcedureBuilderWithInputOutput<T, ID, C, U, Os>;
+        os: CreateProcedureBuilderWithInputOutput<T, ID, C, U, W, Os>;
     }) => R
 ): R {
     const { schema, os } = options;
