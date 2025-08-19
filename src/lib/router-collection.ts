@@ -194,6 +194,7 @@ export function createCollectionSchema<
     // const idArg = schema.pick({ [idName]: true } as const);
 
     const fields = Object.keys(schema.shape) as [keyof T];
+    const fieldsWithAll = [...fields, "_all"] as [keyof T & string, "_all"];
     const errorSchema = z.object({
         message: z.string(),
         details: z.array(z.string()).optional(),
@@ -205,13 +206,11 @@ export function createCollectionSchema<
         z.enum(fields as [keyof T & string]),
         z.literal(true)
     );
-    const countResultSchema = z
-        .record(z.enum(fields as [keyof T & string]), z.number())
-        .and(
-            z.object({
-                _all: z.number(),
-            })
-        );
+    const countResultSchema = z.record(
+        z.enum(fieldsWithAll),
+        z.number().optional()
+    );
+
     return {
         one: schema,
         schema,
@@ -229,18 +228,20 @@ export function createCollectionSchema<
         updateResult: schemaWithError,
         deleteArg: idSChema,
         deleteResult: schemaWithError,
-        findManyArg: z.object({
-            where: whereSchema.optional(),
-            orderBy: z
-                .record(
-                    z.enum(fields as [keyof T & string]),
-                    z.enum(["asc", "desc"])
-                )
-                .optional(),
-            page: z.number().optional(),
-            pageSize: z.number().optional(),
-            count: countSchema.optional(),
-        }),
+        findManyArg: z
+            .object({
+                where: whereSchema.optional(),
+                orderBy: z
+                    .record(
+                        z.enum(fields as [keyof T & string]),
+                        z.enum(["asc", "desc"])
+                    )
+                    .optional(),
+                page: z.number().optional(),
+                pageSize: z.number().optional(),
+                count: countSchema.optional(),
+            })
+            .optional(),
         findManyResult: z.object({
             items: z.array(schema),
             page: z.number(),
@@ -444,6 +445,7 @@ export function createHandlerFindMany<
     modelName: Uncapitalize<ModelName>
 ) {
     const model = prisma[modelName];
+    prisma.todo.count({});
     if (!model) {
         throw new Error(`Model ${modelName} not found in PrismaClient`);
     }
@@ -452,7 +454,7 @@ export function createHandlerFindMany<
     }: {
         input: z.infer<typeof collectionSchema.findManyArg>;
     }) {
-        const { where, orderBy, pageSize, page } = input;
+        const { where, orderBy, pageSize, page, count: select } = input || {};
         let skip = 0;
         if (page && pageSize) {
             skip = (page - 1) * pageSize;
@@ -467,7 +469,10 @@ export function createHandlerFindMany<
 
         // @ts-ignore
         const count = (await model.count({
-            where,
+            select: {
+                _all: true,
+                ...select,
+            },
         })) as z.infer<typeof collectionSchema.findManyResult>["count"];
 
         return {

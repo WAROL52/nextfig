@@ -12,8 +12,8 @@ type PageProps = {
 export default async function Page({ searchParams }: PageProps) {
     const params = await searchParams;
     const where = buildPrismaWhere(params, {
-        email: "string",
-        name: "string",
+        title: "string",
+        description: "string",
     });
     const queryClient = getQueryClient();
 
@@ -21,7 +21,7 @@ export default async function Page({ searchParams }: PageProps) {
     console.log("Prisma Where:", where);
 
     queryClient.prefetchQuery(
-        orpc.user.list.queryOptions({
+        orpc.todo.findMany.queryOptions({
             input: {
                 where,
             },

@@ -26,6 +26,8 @@ export const todoRouter = createCollectionRouter(
                 return handler.delete({ input });
             }),
             findMany: os.findMany.handler(async ({ input }) => {
+                console.log("Find Many Input:", input);
+
                 return handler.findMany({ input });
             }),
             findOne: os.findOne.handler(({ input }) => {

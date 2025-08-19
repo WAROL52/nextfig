@@ -15,15 +15,18 @@ export type ClientComponentProps = {};
 
 export function ClientComponent({}: ClientComponentProps) {
     const fieldMap: RessourceFilter.FieldMap = {
-        email: "string",
-        name: "string",
+        title: "string",
+        description: "string",
+        status: "enum",
     };
     const { where: where } = useRessourceFilterWhereClause(fieldMap);
     console.log("Filter Where Clause:", where);
 
     const query = useQuery(
-        orpc.user.list.queryOptions({
-            input: { where },
+        orpc.todo.findMany.queryOptions({
+            input: {
+                where,
+            },
         })
     );
 
@@ -37,11 +40,13 @@ export function ClientComponent({}: ClientComponentProps) {
 
             <div>
                 <ResourceFilterController fieldMap={fieldMap} />
+                {query.data?.page}-{query.data?.pageSize}/
+                {query.data?.count._all}
             </div>
             <ul>
-                {query.data?.map((user) => (
-                    <li key={user.id}>
-                        {user.email} - {user.name}
+                {query.data?.items?.map((todo) => (
+                    <li key={todo.id}>
+                        {todo.title} - {todo.status}
                     </li>
                 ))}
             </ul>
