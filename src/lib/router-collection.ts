@@ -230,7 +230,16 @@ export function createCollectionSchema<
         deleteResult: schemaWithError,
         findManyArg: z
             .object({
-                where: whereSchema.optional(),
+                where:
+                    whereSchema instanceof z.ZodObject
+                        ? whereSchema
+                              .omit({
+                                  AND: true,
+                                  OR: true,
+                                  NOT: true,
+                              })
+                              .optional()
+                        : whereSchema,
                 orderBy: z
                     .record(
                         z.enum(fields as [keyof T & string]),
