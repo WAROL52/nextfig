@@ -247,7 +247,7 @@ export function createCollectionSchema<
                     )
                     .optional(),
                 page: z.number().optional(),
-                pageSize: z.number().optional(),
+                limit: z.number().optional(),
                 count: countSchema.optional(),
             })
             .optional(),
@@ -463,16 +463,22 @@ export function createHandlerFindMany<
     }: {
         input: z.infer<typeof collectionSchema.findManyArg>;
     }) {
-        const { where, orderBy, pageSize, page, count: select } = input || {};
+        const { where, orderBy, limit, page, count: select } = input || {};
         let skip = 0;
-        if (page && pageSize) {
-            skip = (page - 1) * pageSize;
+        if (page) {
+            skip = (Number(page) || 1) * Number(limit || 0);
         }
+        console.log("==>", {
+            skip,
+            limit,
+            page,
+        });
+
         // @ts-ignore
         const items = (await model.findMany({
             where,
             orderBy,
-            take: pageSize,
+            take: limit,
             skip,
         })) as z.infer<typeof collectionSchema.findManyResult>["items"];
 
@@ -487,7 +493,7 @@ export function createHandlerFindMany<
         return {
             items,
             page: page || 1,
-            pageSize: pageSize || items.length,
+            pageSize: limit || items.length,
             count,
         };
     };

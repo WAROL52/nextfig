@@ -2,7 +2,6 @@
 
 import { useQuery } from "@tanstack/react-query";
 import {
-    PaginationState,
     SortingState,
     getCoreRowModel,
     getFilteredRowModel,
@@ -34,21 +33,25 @@ import { orpc } from "@/lib/orpc";
 import { createColumnDef } from "@/data-table/column-def";
 import { todoSchema } from "@/schemas/todo.schema";
 
+import { usePaginationSearchParams } from "./search-params.pagination";
+
 const todoColumn = createColumnDef(todoSchema.schema);
 
 export type DataTableLaboProps = {};
 
 export function DataTableLabo({}: DataTableLaboProps) {
-    const [pagination, setPagination] = useState<PaginationState>({
-        pageIndex: 0,
-        pageSize: 10,
-    });
+    const [pagination, setPagination] = usePaginationSearchParams();
     const [sorting, setSorting] = useState<SortingState>([
         { id: "status", desc: true },
     ]);
 
     const { data: result, isPending } = useQuery(
-        orpc.todo.findMany.queryOptions({})
+        orpc.todo.findMany.queryOptions({
+            input: {
+                page: pagination.pageIndex + 1,
+                pageSize: pagination.pageSize,
+            },
+        })
     );
     const data = result?.items || [];
     const columns = useMemo(() => todoColumn, []);
@@ -58,7 +61,7 @@ export function DataTableLabo({}: DataTableLaboProps) {
     const table = useReactTable({
         columns,
         data: data,
-        pageCount: Math.ceil((data.length || 0) / pagination.pageSize),
+        pageCount: Math.ceil((result?.count._all || 0) / pagination.pageSize),
         getRowId: (row) => row.id,
         state: {
             pagination,
@@ -90,7 +93,12 @@ export function DataTableLabo({}: DataTableLaboProps) {
             >
                 <Card>
                     <CardHeader className="py-3">
-                        <CardTitle>Todo</CardTitle>
+                        <CardTitle>
+                            Todo{" "}
+                            <pre>
+                                {JSON.stringify(pagination, null, 2)}
+                            </pre>{" "}
+                        </CardTitle>
                         <CardToolbar>
                             <DataGridColumnVisibility
                                 table={table}
