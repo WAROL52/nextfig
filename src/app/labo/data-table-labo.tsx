@@ -41,12 +41,18 @@ export type DataTableLaboProps = {};
 
 export function DataTableLabo({}: DataTableLaboProps) {
     const [pagination, setPagination] = usePaginationSearchParams();
+    const [pageIndex, setPageIndex] = useState(0);
     const [sorting, setSorting] = useState<SortingState>([
         { id: "status", desc: true },
     ]);
 
-    const { data: result, isPending } = useQuery(
+    const {
+        data: result,
+        isPending,
+        isLoading,
+    } = useQuery(
         orpc.todo.findMany.queryOptions({
+            context: { cache: true },
             input: {
                 page: pagination.pageIndex + 1,
                 pageSize: pagination.pageSize,
@@ -58,10 +64,11 @@ export function DataTableLabo({}: DataTableLaboProps) {
     const [columnOrder, setColumnOrder] = useState<string[]>(
         columns.map((column) => column.id as string)
     );
+    const recordCount = result?.count._all || 0;
     const table = useReactTable({
         columns,
         data: data,
-        pageCount: Math.ceil((result?.count._all || 0) / pagination.pageSize),
+        pageCount: Math.ceil(recordCount / pagination.pageSize),
         getRowId: (row) => row.id,
         state: {
             pagination,
@@ -81,8 +88,8 @@ export function DataTableLabo({}: DataTableLaboProps) {
         <div>
             <DataGrid
                 table={table}
-                recordCount={data?.length || 0}
-                isLoading={isPending}
+                recordCount={recordCount}
+                isLoading={isLoading}
                 tableLayout={{
                     headerSticky: true,
                     columnsPinnable: true,
@@ -95,6 +102,10 @@ export function DataTableLabo({}: DataTableLaboProps) {
                     <CardHeader className="py-3">
                         <CardTitle>
                             Todo{" "}
+                            <Button onClick={() => setPageIndex(pageIndex + 1)}>
+                                pageIndex {pageIndex}
+                            </Button>
+                            data size {data.length}{" "}
                             <pre>
                                 {JSON.stringify(pagination, null, 2)}
                             </pre>{" "}

@@ -12,5 +12,6 @@ const paginationUrlKeys = {
 export function usePaginationSearchParams() {
     return useQueryStates(paginationParsers, {
         urlKeys: paginationUrlKeys,
+        shallow: false,
     });
 }
