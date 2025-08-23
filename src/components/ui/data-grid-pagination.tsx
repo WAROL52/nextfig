@@ -85,6 +85,8 @@ function DataGridPagination(props: DataGridPaginationProps) {
                     })}
                     onClick={() => {
                         if (pageIndex !== i) {
+                            console.log("setPageIndex", i);
+
                             table.setPageIndex(i);
                         }
                     }}

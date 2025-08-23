@@ -1,7 +1,7 @@
 import { parseAsIndex, parseAsInteger, useQueryStates } from "nuqs";
 
 const paginationParsers = {
-    pageIndex: parseAsIndex.withDefault(0),
+    pageIndex: parseAsIndex.withDefault(1),
     pageSize: parseAsInteger.withDefault(10),
 };
 const paginationUrlKeys = {
@@ -13,5 +13,6 @@ export function usePaginationSearchParams() {
     return useQueryStates(paginationParsers, {
         urlKeys: paginationUrlKeys,
         shallow: false,
+        clearOnDefault: false,
     });
 }

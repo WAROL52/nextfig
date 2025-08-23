@@ -1,5 +1,6 @@
 "use client";
 
+import { useThrottledValue } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import {
     SortingState,
@@ -41,7 +42,6 @@ export type DataTableLaboProps = {};
 
 export function DataTableLabo({}: DataTableLaboProps) {
     const [pagination, setPagination] = usePaginationSearchParams();
-    const [pageIndex, setPageIndex] = useState(0);
     const [sorting, setSorting] = useState<SortingState>([
         { id: "status", desc: true },
     ]);
@@ -54,7 +54,7 @@ export function DataTableLabo({}: DataTableLaboProps) {
         orpc.todo.findMany.queryOptions({
             context: { cache: true },
             input: {
-                page: pagination.pageIndex + 1,
+                page: pagination.pageIndex,
                 pageSize: pagination.pageSize,
             },
         })
@@ -64,20 +64,21 @@ export function DataTableLabo({}: DataTableLaboProps) {
     const [columnOrder, setColumnOrder] = useState<string[]>(
         columns.map((column) => column.id as string)
     );
-    const recordCount = result?.count._all || 0;
+    const recordCount = useThrottledValue(result?.count._all || 0, 500);
+    const pageCount = Math.ceil(recordCount / pagination.pageSize);
     const table = useReactTable({
         columns,
         data: data,
-        pageCount: Math.ceil(recordCount / pagination.pageSize),
+        pageCount,
         getRowId: (row) => row.id,
         state: {
             pagination,
             sorting,
             columnOrder,
         },
-        onPaginationChange: setPagination,
         onSortingChange: setSorting,
         onColumnOrderChange: setColumnOrder,
+        onPaginationChange: setPagination,
 
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
@@ -101,11 +102,12 @@ export function DataTableLabo({}: DataTableLaboProps) {
                 <Card>
                     <CardHeader className="py-3">
                         <CardTitle>
-                            Todo{" "}
-                            <Button onClick={() => setPageIndex(pageIndex + 1)}>
-                                pageIndex {pageIndex}
+                            Todo data size {data.length} pageCount{" "}
+                            {Math.ceil(recordCount / pagination.pageSize)}
+                            <Button>
+                                pageIndex {pagination.pageIndex} / pageSize{" "}
+                                {pagination.pageSize}
                             </Button>
-                            data size {data.length}{" "}
                             <pre>
                                 {JSON.stringify(pagination, null, 2)}
                             </pre>{" "}
@@ -130,6 +132,7 @@ export function DataTableLabo({}: DataTableLaboProps) {
                     </CardTable>
                     <CardFooter>
                         <DataGridPagination />
+                        {/* <PaginationSearchParams totalPages={pageCount} /> */}
                     </CardFooter>
                 </Card>
             </DataGrid>

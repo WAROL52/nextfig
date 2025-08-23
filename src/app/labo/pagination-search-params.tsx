@@ -33,9 +33,9 @@ export function PaginationSearchParams({
     const [{ pageIndex, pageSize }, setPagination] =
         usePaginationSearchParams();
     const currentPage = pageIndex + 1;
-    const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+    const pages = Array.from({ length: 5 }, (_, i) => i + pageIndex);
     return (
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex w-full items-center justify-between gap-3">
             {/* Page number information */}
             <p
                 className="text-muted-foreground flex-1 text-sm whitespace-nowrap"
@@ -77,12 +77,17 @@ export function PaginationSearchParams({
 
                         {/* Page number links */}
                         {pages.map((page) => (
-                            <PaginationItem key={page}>
+                            <PaginationItem key={page * pageSize}>
                                 <PaginationLink
-                                    href={`#/page/${page}`}
-                                    isActive={page === currentPage}
+                                    onClick={() =>
+                                        setPagination({
+                                            pageIndex: page,
+                                            pageSize,
+                                        })
+                                    }
+                                    isActive={page === currentPage - 1}
                                 >
-                                    {page}
+                                    {page + 1}
                                 </PaginationLink>
                             </PaginationItem>
                         ))}
@@ -127,7 +132,13 @@ export function PaginationSearchParams({
 
             {/* Results per page */}
             <div className="flex flex-1 justify-end">
-                <Select defaultValue="10" aria-label="Results per page">
+                <Select
+                    value={String(pageSize)}
+                    onValueChange={(value) =>
+                        setPagination({ pageIndex: 0, pageSize: Number(value) })
+                    }
+                    aria-label="Results per page"
+                >
                     <SelectTrigger
                         id="results-per-page"
                         className="w-fit whitespace-nowrap"
