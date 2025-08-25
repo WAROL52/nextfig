@@ -39,6 +39,16 @@ export function PaginationSearchParams({
     const showLeftEllipsis = start > 0 && totalPages > length;
     const showRightEllipsis =
         start + length < totalPages && totalPages > length;
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setPagination({ pageIndex: pageIndex + 1, pageSize });
+        }
+    };
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setPagination({ pageIndex: pageIndex - 1, pageSize });
+        }
+    };
     return (
         <div className="flex w-full items-center justify-between gap-3">
             {/* Page number information */}
@@ -56,21 +66,29 @@ export function PaginationSearchParams({
                     <PaginationContent>
                         {/* Previous page button */}
                         <PaginationItem>
-                            <PaginationLink
-                                className="aria-disabled:pointer-events-none aria-disabled:opacity-50"
-                                href={
-                                    currentPage === 1
-                                        ? undefined
-                                        : `#/page/${currentPage - 1}`
-                                }
-                                aria-label="Go to previous page"
-                                aria-disabled={
-                                    currentPage === 1 ? true : undefined
-                                }
-                                role={currentPage === 1 ? "link" : undefined}
+                            <Button
+                                asChild
+                                variant="ghost"
+                                onClick={handlePreviousPage}
+                                size="sm"
+                                className="cursor-pointer"
                             >
-                                <ChevronLeftIcon size={16} aria-hidden="true" />
-                            </PaginationLink>
+                                <PaginationLink
+                                    className="aria-disabled:pointer-events-none aria-disabled:opacity-50"
+                                    aria-label="Go to previous page"
+                                    aria-disabled={
+                                        currentPage === 1 ? true : undefined
+                                    }
+                                    role={
+                                        currentPage === 1 ? "link" : undefined
+                                    }
+                                >
+                                    <ChevronLeftIcon
+                                        size={16}
+                                        aria-hidden="true"
+                                    />
+                                </PaginationLink>
+                            </Button>
                         </PaginationItem>
 
                         {/* Left ellipsis (...) */}
@@ -113,30 +131,33 @@ export function PaginationSearchParams({
 
                         {/* Next page button */}
                         <PaginationItem>
-                            <PaginationLink
-                                className="aria-disabled:pointer-events-none aria-disabled:opacity-50"
-                                href={
-                                    currentPage === totalPages
-                                        ? undefined
-                                        : `#/page/${currentPage + 1}`
-                                }
-                                aria-label="Go to next page"
-                                aria-disabled={
-                                    currentPage === totalPages
-                                        ? true
-                                        : undefined
-                                }
-                                role={
-                                    currentPage === totalPages
-                                        ? "link"
-                                        : undefined
-                                }
+                            <Button
+                                asChild
+                                variant="ghost"
+                                onClick={handleNextPage}
+                                size="sm"
+                                className="cursor-pointer"
                             >
-                                <ChevronRightIcon
-                                    size={16}
-                                    aria-hidden="true"
-                                />
-                            </PaginationLink>
+                                <PaginationLink
+                                    className="aria-disabled:pointer-events-none aria-disabled:opacity-50"
+                                    aria-label="Go to next page"
+                                    aria-disabled={
+                                        currentPage === totalPages
+                                            ? true
+                                            : undefined
+                                    }
+                                    role={
+                                        currentPage === totalPages
+                                            ? "link"
+                                            : undefined
+                                    }
+                                >
+                                    <ChevronRightIcon
+                                        size={16}
+                                        aria-hidden="true"
+                                    />
+                                </PaginationLink>
+                            </Button>
                         </PaginationItem>
                     </PaginationContent>
                 </Pagination>
