@@ -1,6 +1,5 @@
 "use client";
 
-import { useThrottledValue } from "@mantine/hooks";
 import { useQuery } from "@tanstack/react-query";
 import {
     SortingState,
@@ -64,8 +63,9 @@ export function DataTableLabo({}: DataTableLaboProps) {
     const [columnOrder, setColumnOrder] = useState<string[]>(
         columns.map((column) => column.id as string)
     );
-    const recordCount = useThrottledValue(result?.count._all || 0, 500);
-    const pageCount = Math.ceil(recordCount / pagination.pageSize);
+    const pageCount = Math.ceil(
+        (result?.count._all || 0) / pagination.pageSize
+    );
     const table = useReactTable({
         columns,
         data: data,
@@ -74,6 +74,7 @@ export function DataTableLabo({}: DataTableLaboProps) {
         state: {
             sorting,
             columnOrder,
+            pagination,
         },
         onSortingChange: setSorting,
         onColumnOrderChange: setColumnOrder,
@@ -87,7 +88,7 @@ export function DataTableLabo({}: DataTableLaboProps) {
         <div>
             <DataGrid
                 table={table}
-                recordCount={recordCount}
+                recordCount={data.length}
                 isLoading={isLoading}
                 tableLayout={{
                     headerSticky: true,
@@ -101,7 +102,7 @@ export function DataTableLabo({}: DataTableLaboProps) {
                     <CardHeader className="py-3">
                         <CardTitle>
                             Todo data size {data.length} pageCount{" "}
-                            {Math.ceil(recordCount / pagination.pageSize)}
+                            {Math.ceil(data.length / pagination.pageSize)}
                             <Button>
                                 pageIndex {pagination.pageIndex} / pageSize{" "}
                                 {pagination.pageSize}
