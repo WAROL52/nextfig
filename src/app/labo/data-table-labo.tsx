@@ -25,7 +25,6 @@ import {
 } from "@/components/ui/card";
 import { DataGrid } from "@/components/ui/data-grid";
 import { DataGridColumnVisibility } from "@/components/ui/data-grid-column-visibility";
-import { DataGridPagination } from "@/components/ui/data-grid-pagination";
 import { DataGridTable } from "@/components/ui/data-grid-table";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
@@ -34,6 +33,7 @@ import { orpc } from "@/lib/orpc";
 import { createColumnDef } from "@/data-table/column-def";
 import { todoSchema } from "@/schemas/todo.schema";
 
+import { PaginationSearchParams } from "./pagination-search-params";
 import { usePaginationSearchParams } from "./search-params.pagination";
 
 const todoColumn = createColumnDef(todoSchema.schema);
@@ -41,7 +41,7 @@ const todoColumn = createColumnDef(todoSchema.schema);
 export type DataTableLaboProps = {};
 
 export function DataTableLabo({}: DataTableLaboProps) {
-    const [pagination, setPagination] = usePaginationSearchParams();
+    const [pagination] = usePaginationSearchParams();
     const [sorting, setSorting] = useState<SortingState>([
         { id: "status", desc: true },
     ]);
@@ -54,7 +54,7 @@ export function DataTableLabo({}: DataTableLaboProps) {
         orpc.todo.findMany.queryOptions({
             context: { cache: true },
             input: {
-                page: pagination.pageIndex,
+                page: pagination.pageIndex + 1,
                 pageSize: pagination.pageSize,
             },
         })
@@ -72,13 +72,11 @@ export function DataTableLabo({}: DataTableLaboProps) {
         pageCount,
         getRowId: (row) => row.id,
         state: {
-            pagination,
             sorting,
             columnOrder,
         },
         onSortingChange: setSorting,
         onColumnOrderChange: setColumnOrder,
-        onPaginationChange: setPagination,
 
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
@@ -131,8 +129,7 @@ export function DataTableLabo({}: DataTableLaboProps) {
                         </ScrollArea>
                     </CardTable>
                     <CardFooter>
-                        <DataGridPagination />
-                        {/* <PaginationSearchParams totalPages={pageCount} /> */}
+                        <PaginationSearchParams totalPages={pageCount} />
                     </CardFooter>
                 </Card>
             </DataGrid>

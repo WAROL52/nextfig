@@ -2,6 +2,7 @@
 
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import {
     Pagination,
     PaginationContent,
@@ -21,19 +22,23 @@ import { usePaginationSearchParams } from "./search-params.pagination";
 
 export type PaginationSearchParamsProps = {
     totalPages: number;
-    showLeftEllipsis?: boolean;
-    showRightEllipsis?: boolean;
 };
 
 export function PaginationSearchParams({
     totalPages,
-    showLeftEllipsis = true,
-    showRightEllipsis = true,
 }: PaginationSearchParamsProps) {
     const [{ pageIndex, pageSize }, setPagination] =
         usePaginationSearchParams();
     const currentPage = pageIndex + 1;
-    const pages = Array.from({ length: 5 }, (_, i) => i + pageIndex);
+    const length = totalPages > 5 ? 5 : totalPages;
+    const start = Math.max(
+        0,
+        Math.min(currentPage - Math.ceil(length / 2), totalPages - length)
+    );
+    const pages = Array.from({ length }, (_, i) => i + start);
+    const showLeftEllipsis = start > 0 && totalPages > length;
+    const showRightEllipsis =
+        start + length < totalPages && totalPages > length;
     return (
         <div className="flex w-full items-center justify-between gap-3">
             {/* Page number information */}
@@ -78,17 +83,24 @@ export function PaginationSearchParams({
                         {/* Page number links */}
                         {pages.map((page) => (
                             <PaginationItem key={page * pageSize}>
-                                <PaginationLink
-                                    onClick={() =>
-                                        setPagination({
-                                            pageIndex: page,
-                                            pageSize,
-                                        })
-                                    }
-                                    isActive={page === currentPage - 1}
+                                <Button
+                                    asChild
+                                    variant="ghost"
+                                    size="sm"
+                                    className="cursor-pointer"
                                 >
-                                    {page + 1}
-                                </PaginationLink>
+                                    <PaginationLink
+                                        onClick={() =>
+                                            setPagination({
+                                                pageIndex: page,
+                                                pageSize,
+                                            })
+                                        }
+                                        isActive={page === currentPage - 1}
+                                    >
+                                        {page + 1}
+                                    </PaginationLink>
+                                </Button>
                             </PaginationItem>
                         ))}
 
