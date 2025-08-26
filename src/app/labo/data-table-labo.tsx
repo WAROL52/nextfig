@@ -40,7 +40,10 @@ import { orpc } from "@/lib/orpc";
 import { createColumnDef } from "@/data-table/column-def";
 import { todoSchema } from "@/schemas/todo.schema";
 
-import { InputSearchRessource } from "./input-search-ressource";
+import {
+    InputSearchRessource,
+    useSearchRessource,
+} from "./input-search-ressource";
 import { PaginationSearchParams } from "./pagination-search-params";
 import { usePaginationSearchParams } from "./search-params.pagination";
 
@@ -50,6 +53,7 @@ export type DataTableLaboProps = {};
 
 export function DataTableLabo({}: DataTableLaboProps) {
     const [pagination] = usePaginationSearchParams();
+    const { debouncedSearch } = useSearchRessource();
     const [sorting, setSorting] = useState<SortingState>([
         { id: "status", desc: true },
     ]);
@@ -64,6 +68,7 @@ export function DataTableLabo({}: DataTableLaboProps) {
             input: {
                 page: pagination.pageIndex + 1,
                 pageSize: pagination.pageSize,
+                search: debouncedSearch,
             },
         })
     );

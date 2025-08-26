@@ -249,6 +249,7 @@ export function createCollectionSchema<
                 page: z.number().optional(),
                 limit: z.number().optional(),
                 count: countSchema.optional(),
+                search: z.string().optional(),
             })
             .optional(),
         findManyResult: z.object({
@@ -458,25 +459,67 @@ export function createHandlerFindMany<
     if (!model) {
         throw new Error(`Model ${modelName} not found in PrismaClient`);
     }
+    const fields = Object.keys(collectionSchema.schema.shape);
+
     return async function handlerFindMany({
         input,
     }: {
         input: z.infer<typeof collectionSchema.findManyArg>;
     }) {
-        const { where, orderBy, limit, page, count: select } = input || {};
+        const {
+            where = {},
+            orderBy,
+            limit,
+            page,
+            count: select,
+            search,
+        } = input || {};
+        const fieldTypeStrings = fields
+            .map((field) => {
+                const shape = collectionSchema.schema.shape[field];
+                if (shape instanceof z.ZodString) {
+                    return field;
+                }
+                if (shape instanceof z.ZodOptional) {
+                    if (shape._def.innerType instanceof z.ZodString) {
+                        return field;
+                    }
+                }
+                if (shape instanceof z.ZodNullable) {
+                    if (shape._def.innerType instanceof z.ZodString) {
+                        return field;
+                    }
+                }
+                return null;
+            })
+            .filter(Boolean) as string[];
+        const whereSearch: {
+            OR?: Record<
+                string,
+                {
+                    contains?: string;
+                    mode: "insensitive";
+                }
+            >[];
+        } = {};
+        if (fieldTypeStrings.length > 0 && search) {
+            whereSearch.OR = fieldTypeStrings.map((field) => ({
+                [field]: { contains: search, mode: "insensitive" },
+            }));
+        }
         let skip = 0;
         if (page) {
             skip = (Number(page) || 1) * Number(limit || 0);
         }
         console.log("==>", {
-            skip,
-            limit,
-            page,
+            fieldTypeStrings,
         });
 
         // @ts-ignore
         const items = (await model.findMany({
-            where,
+            where: {
+                AND: [where, whereSearch],
+            },
             orderBy,
             take: limit,
             skip,
