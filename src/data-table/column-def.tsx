@@ -12,12 +12,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { DataGridColumnHeader } from "@/components/ui/data-grid-column-header";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 function ColumnIcon({ type }: { type: z.ZodType<any> }) {
     if (isZodTypeString(type)) {
@@ -131,20 +131,27 @@ function renderDateCell(cell: CellContext<any, unknown>) {
     return function Render() {
         const date = new Date(cell.getValue() as string);
         return (
-            <Popover>
-                <PopoverTrigger>
-                    <Button variant="ghost" className="w-full justify-start">
-                        {date.toLocaleDateString()}
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent asChild className="z-50">
-                    <Calendar
-                        mode="single"
-                        selected={date}
-                        className="bg-background text-foreground rounded-lg border opacity-100"
-                    />
-                </PopoverContent>
-            </Popover>
+            <div>
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <Button
+                            variant="ghost"
+                            className="w-full justify-start"
+                        >
+                            {date.toLocaleDateString()}
+                        </Button>
+                    </TooltipTrigger>
+                    <TooltipContent className="p-0" align="start">
+                        <div>
+                            <Calendar
+                                mode="single"
+                                selected={date}
+                                className="bg-background text-foreground border"
+                            />
+                        </div>
+                    </TooltipContent>
+                </Tooltip>
+            </div>
         );
     };
 }

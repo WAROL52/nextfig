@@ -32,7 +32,6 @@ export function InputSearchRessource({}: InputSearchRessourceProps) {
                 />
                 <Button
                     onClick={handleClearInput}
-                    variant="dim"
                     className="-me-4"
                     disabled={search === ""}
                 >
