@@ -51,7 +51,6 @@ export function PaginationSearchParams({
     };
     return (
         <div className="flex w-full items-center justify-between gap-3">
-            {/* Page number information */}
             <p
                 className="text-muted-foreground flex-1 text-sm whitespace-nowrap"
                 aria-live="polite"
